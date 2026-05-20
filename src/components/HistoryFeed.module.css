@@ -1,0 +1,93 @@
+.root {
+  background: var(--dio-light);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--dio-cream-soft);
+  border-bottom: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--dio-navy);
+}
+
+.toggle {
+  font-size: var(--text-xs);
+  color: var(--dio-grey);
+}
+
+.body {
+  padding: var(--sp-4);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.empty {
+  text-align: center;
+  color: var(--dio-grey);
+  font-style: italic;
+  padding: var(--sp-4);
+}
+
+.group {
+  border-left: 2px solid var(--dio-gold-soft);
+  padding: 0 0 var(--sp-3) var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.group:last-child {
+  margin-bottom: 0;
+}
+
+.groupHead {
+  font-size: 12px;
+  color: var(--dio-grey);
+  margin-bottom: 2px;
+}
+
+.email {
+  color: var(--dio-navy);
+  font-weight: 500;
+}
+
+.change {
+  font-size: 13px;
+  color: var(--dio-navy);
+  line-height: 1.5;
+}
+
+.fieldName {
+  font-weight: 600;
+}
+
+.from {
+  color: var(--dio-grey);
+}
+
+.note {
+  font-size: 12px;
+  color: var(--dio-grey);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.inferredTag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: var(--dio-gold-soft);
+  color: var(--status-amber);
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+}

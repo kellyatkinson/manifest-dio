@@ -1,0 +1,71 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-8);
+  background: var(--dio-light);
+  border-bottom: 1px solid var(--border-soft);
+  height: 100%;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--dio-grey);
+  min-width: 0;
+}
+
+.crumb {
+  color: var(--dio-grey);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.crumb:hover {
+  color: var(--dio-navy);
+  text-decoration: underline;
+}
+
+.crumbCurrent {
+  color: var(--dio-navy);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 320px;
+}
+
+.sep {
+  color: var(--dio-grey-soft);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--text-sm);
+  color: var(--dio-grey);
+}
+
+.userEmail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dio-grey);
+}
+
+.signOut {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--dio-light);
+  color: var(--dio-navy);
+  cursor: pointer;
+}
+
+.signOut:hover {
+  background: var(--dio-cream);
+}

@@ -1,0 +1,75 @@
+/* ---------------------------------------------------------------
+   Manifest design tokens
+   --------------------------------------------------------------
+   Single source of truth for colours, spacing, and type.
+   Palette lifted from `portfolio.html` so the React app inherits
+   the existing Dio styling without divergence.
+
+   Other CSS Modules import this implicitly via the global
+   `@import` in main.tsx -- the variables are defined on :root.
+   ------------------------------------------------------------- */
+
+:root {
+  /* Dio brand palette */
+  --dio-navy: #1a2b4a;
+  --dio-navy-deep: #0f1d36;
+  --dio-cream: #f5f1e8;
+  --dio-cream-soft: #faf7ef;
+  --dio-gold: #c9a961;
+  --dio-gold-soft: #e5d4a3;
+  --dio-grey: #5a6b7e;
+  --dio-grey-soft: #8a98a8;
+  --dio-light: #ffffff;
+  --dio-accent: #6b8caf;
+
+  /* Status colours (matches portfolio.html) */
+  --status-green: #2f7d4e;
+  --status-green-bg: #d9ead0;
+  --status-amber: #a36a14;
+  --status-amber-bg: #f5e4c1;
+  --status-red: #9b2a2a;
+  --status-red-bg: #f0cdcd;
+  --status-placeholder: #6b6b6b;
+  --status-placeholder-bg: #e0e0e0;
+
+  /* Borders, surfaces, shadows */
+  --border: #d8d2c4;
+  --border-soft: #ebe6d8;
+  --surface: #ffffff;
+  --shadow: 0 1px 3px rgba(15, 29, 54, 0.06), 0 1px 2px rgba(15, 29, 54, 0.04);
+  --shadow-lifted: 0 4px 12px rgba(15, 29, 54, 0.10), 0 2px 4px rgba(15, 29, 54, 0.05);
+
+  /* Spacing scale (4px grid) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+
+  /* Radii */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Layout */
+  --sidebar-w: 240px;
+  --header-h: 56px;
+  --content-max-w: 1400px;
+}

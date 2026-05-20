@@ -1,0 +1,38 @@
+.root {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--dio-navy);
+}
+
+.muted {
+  color: var(--dio-grey-soft);
+  font-style: italic;
+}
+
+.dagger {
+  color: var(--dio-gold);
+  margin-left: 2px;
+  font-size: 11px;
+  cursor: help;
+}
+
+.button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--dio-navy);
+  background: transparent;
+  border: 1px dashed transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.button:hover {
+  border-color: var(--dio-gold-soft);
+  background: var(--dio-cream-soft);
+}

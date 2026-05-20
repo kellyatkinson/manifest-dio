@@ -1,0 +1,51 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--dio-cream-soft);
+  border: 1px solid var(--dio-gold-soft);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--dio-navy);
+  margin-bottom: var(--sp-4);
+}
+
+.icon {
+  font-size: 16px;
+  color: var(--dio-gold);
+  line-height: 1;
+}
+
+.body {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.button {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--dio-light);
+  border-radius: var(--radius-md);
+  color: var(--dio-navy);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--dio-cream);
+}
+
+.primary {
+  border-color: var(--dio-navy);
+  background: var(--dio-navy);
+  color: var(--dio-cream);
+}
+
+.primary:hover {
+  background: var(--dio-navy-deep);
+}

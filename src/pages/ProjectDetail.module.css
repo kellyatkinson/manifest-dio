@@ -1,0 +1,238 @@
+.head {
+  margin-bottom: var(--sp-5);
+}
+
+.headRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: var(--text-3xl);
+  color: var(--dio-navy);
+  letter-spacing: -0.4px;
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 12px;
+  color: var(--dio-grey);
+  margin-top: 4px;
+}
+
+.metaLabel {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  color: var(--dio-grey-soft);
+}
+
+.email {
+  font-family: var(--font-mono);
+  color: var(--dio-grey);
+}
+
+.stateChip {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 3px 10px;
+  border-radius: 11px;
+  background: var(--border-soft);
+  color: var(--dio-grey);
+}
+
+.stateChip[data-state='active'] {
+  background: var(--status-green-bg);
+  color: var(--status-green);
+}
+
+.stateChip[data-state='archived'] {
+  background: var(--dio-gold-soft);
+  color: var(--status-amber);
+}
+
+.stateChip[data-state='hidden_out_of_scope'] {
+  background: var(--status-placeholder-bg);
+  color: var(--status-placeholder);
+}
+
+.card {
+  background: var(--dio-light);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-4);
+}
+
+.grid,
+.editGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4) var(--sp-6);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldWide {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--dio-grey);
+}
+
+.value {
+  font-size: 13px;
+  color: var(--dio-navy);
+  line-height: 1.5;
+}
+
+.fieldRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.muted {
+  color: var(--dio-grey-soft);
+  font-style: italic;
+}
+
+.inferredFlag {
+  color: var(--dio-gold);
+  cursor: help;
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dio-grey);
+  background: var(--dio-cream-soft);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  word-break: break-all;
+}
+
+.input {
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--dio-light);
+  color: var(--dio-navy);
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+textarea.input {
+  font-family: var(--font-sans);
+  resize: vertical;
+}
+
+.editActions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-soft);
+  padding-top: var(--sp-4);
+  margin-top: var(--sp-2);
+}
+
+.btn {
+  font-size: 13px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: var(--dio-light);
+  color: var(--dio-navy);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--dio-cream);
+}
+
+.btnPrimary {
+  border-color: var(--dio-navy);
+  background: var(--dio-navy);
+  color: var(--dio-cream);
+}
+
+.btnPrimary:hover {
+  background: var(--dio-navy-deep);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.stateRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--dio-light);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+}
+
+.stateRow .input {
+  width: auto;
+  min-width: 220px;
+}
+
+.tasksWrap {
+  margin-bottom: var(--sp-4);
+}
+
+.historyWrap {
+  margin-bottom: var(--sp-4);
+}
+
+.placeholder {
+  padding: var(--sp-8);
+  text-align: center;
+  color: var(--dio-grey);
+  font-style: italic;
+}
+
+.error {
+  padding: var(--sp-4);
+  background: var(--status-red-bg);
+  color: var(--status-red);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .grid,
+  .editGrid {
+    grid-template-columns: 1fr;
+  }
+}

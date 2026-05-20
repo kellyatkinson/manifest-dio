@@ -1,0 +1,30 @@
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: var(--dio-cream-soft);
+  color: var(--dio-grey);
+  border: 1px solid var(--border-soft);
+}
+
+.high {
+  color: var(--status-green);
+  border-color: var(--status-green-bg);
+  background: var(--status-green-bg);
+}
+
+.medium {
+  color: var(--status-amber);
+  border-color: var(--status-amber-bg);
+  background: var(--status-amber-bg);
+}
+
+.low {
+  color: var(--status-red);
+  border-color: var(--status-red-bg);
+  background: var(--status-red-bg);
+}
