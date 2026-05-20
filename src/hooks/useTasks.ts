@@ -11,6 +11,7 @@ import {
   adminSetTaskStatus,
   adminUpdateTask,
   getTask,
+  listAllTasks,
   listTasksForProject,
   type CreateTaskInput,
   type UpdateTaskInput,
@@ -19,6 +20,13 @@ import type { TaskStatusId } from '@/lib/types';
 
 const TASKS_FOR_PROJECT = (projectId: string) => ['tasks', 'project', projectId] as const;
 const TASK_KEY = (id: string) => ['task', id] as const;
+
+export function useAllTasks(includeArchived = false) {
+  return useQuery({
+    queryKey: ['tasks', 'all', includeArchived],
+    queryFn: () => listAllTasks(includeArchived),
+  });
+}
 
 export function useTasksForProject(projectId: string | undefined, includeArchived = false) {
   return useQuery({

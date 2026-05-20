@@ -27,7 +27,10 @@ import { Decisions } from './pages/Decisions';
 import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
 import { Portfolio } from './pages/Portfolio';
+import { Programmes } from './pages/Programmes';
+import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
+import { Tasks } from './pages/Tasks';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +59,9 @@ export function App() {
             <Route path="/portfolio" element={<Portfolio mode="active" />} />
             <Route path="/portfolio/:projectId" element={<ProjectDetail />} />
             <Route path="/portfolio/:projectId/tasks/:taskId" element={<ProjectDetail />} />
+            <Route path="/programmes" element={<Programmes />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/tasks" element={<Tasks />} />
             <Route path="/closed" element={<Portfolio mode="archived" />} />
             <Route path="/decisions" element={<Decisions />} />
           </Route>

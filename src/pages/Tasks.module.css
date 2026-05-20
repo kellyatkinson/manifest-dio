@@ -1,0 +1,221 @@
+.head {
+  margin-bottom: var(--sp-5);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--dio-navy);
+  margin: 0 0 var(--sp-1);
+}
+
+.sub {
+  font-size: var(--text-base);
+  color: var(--dio-grey-soft);
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--dio-blue-ghost);
+  border-radius: var(--radius-md);
+  padding: 3px;
+}
+
+.tab {
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--dio-grey);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: rgba(0, 73, 144, 0.06);
+  color: var(--dio-navy);
+}
+
+.tabActive {
+  background: var(--surface);
+  color: var(--dio-navy);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search {
+  flex: 1;
+  min-width: 160px;
+  max-width: 320px;
+  padding: 8px var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--dio-blue-light);
+  box-shadow: 0 0 0 3px rgba(0, 73, 144, 0.08);
+}
+
+/* ── Table ── */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--dio-grey-soft);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 2px solid var(--border-soft);
+  white-space: nowrap;
+}
+
+.thStatus { width: 28px; }
+.thTitle  { min-width: 200px; }
+.thProject { width: 200px; }
+.thDue    { width: 120px; }
+.thOwner  { width: 160px; }
+.thPri    { width: 48px; text-align: center; }
+
+.row {
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-soft);
+  transition: background 0.1s ease;
+}
+
+.row:hover {
+  background: var(--dio-blue-ghost);
+}
+
+.row_done,
+.row_cancelled {
+  opacity: 0.55;
+}
+
+.row td {
+  padding: var(--sp-3) var(--sp-3);
+  vertical-align: middle;
+}
+
+.tdStatus { width: 28px; }
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot_todo       { background: var(--dio-grey-soft); }
+.dot_in_progress { background: var(--type-project); }
+.dot_done       { background: var(--status-green); }
+.dot_cancelled  { background: var(--border); }
+
+.tdTitle {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.strike {
+  text-decoration: line-through;
+  color: var(--dio-grey-soft);
+}
+
+.tdProject {
+  color: var(--dio-grey);
+}
+
+.projectLink {
+  color: var(--dio-navy);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--dio-blue-light);
+  cursor: pointer;
+}
+
+.projectLink:hover {
+  color: var(--type-project);
+}
+
+.tdDue {
+  color: var(--dio-grey);
+  white-space: nowrap;
+}
+
+.overdue {
+  color: var(--dio-red);
+  font-weight: 600;
+}
+
+.tdOwner {
+  color: var(--dio-grey);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.tdPri {
+  text-align: center;
+}
+
+.priority {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+.pri1 { background: #fde8e8; color: #b91c1c; }
+.pri2 { background: #fef3c7; color: #92400e; }
+.pri3 { background: #e8f5fd; color: var(--type-project); }
+.pri4 { background: var(--dio-blue-ghost); color: var(--dio-grey-soft); }
+
+.muted {
+  color: var(--dio-grey-soft);
+}
+
+.note,
+.empty {
+  color: var(--dio-grey-soft);
+  padding: var(--sp-8) 0;
+  text-align: center;
+}
+
+.foot {
+  margin-top: var(--sp-4);
+  font-size: var(--text-sm);
+  color: var(--dio-grey-soft);
+  text-align: right;
+}

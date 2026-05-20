@@ -87,6 +87,19 @@ export async function getProject(projectId: string): Promise<Project | null> {
   return (data as Project) ?? null;
 }
 
+export async function listAllTasks(includeArchived = false): Promise<Task[]> {
+  let q = supabase
+    .from('tasks')
+    .select('*')
+    .order('due_date', { ascending: true, nullsFirst: false });
+  if (!includeArchived) {
+    q = q.is('archived_at', null);
+  }
+  const { data, error } = await q;
+  if (error) throw new Error(`listAllTasks: ${error.message}`);
+  return (data ?? []) as Task[];
+}
+
 export async function listTasksForProject(projectId: string, includeArchived = false): Promise<Task[]> {
   let q = supabase
     .from('tasks')
