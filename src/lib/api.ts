@@ -172,6 +172,7 @@ export interface CreateProjectInput {
   next_decision?: string;
   deadline?: string;
   canonical_location?: string;
+  logseq_page?: string;
   status_inferred?: boolean;
   status_confidence?: ConfidenceId;
   owner_inferred?: boolean;
@@ -193,6 +194,7 @@ export interface UpdateProjectInput {
   next_decision?: string | null;
   deadline?: string | null;
   canonical_location?: string | null;
+  logseq_page?: string | null;
   display_order?: number;
 }
 

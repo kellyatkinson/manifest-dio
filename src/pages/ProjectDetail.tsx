@@ -75,6 +75,7 @@ export function ProjectDetail() {
       next_decision: project.next_decision ?? '',
       deadline: project.deadline ?? '',
       canonical_location: project.canonical_location ?? '',
+      logseq_page: project.logseq_page ?? '',
     });
     setEditing(true);
   }
@@ -95,6 +96,8 @@ export function ProjectDetail() {
     if (draft.deadline !== (project.deadline ?? '')) payload.deadline = draft.deadline || null;
     if (draft.canonical_location !== (project.canonical_location ?? ''))
       payload.canonical_location = draft.canonical_location || null;
+    if (draft.logseq_page !== (project.logseq_page ?? ''))
+      payload.logseq_page = draft.logseq_page || null;
 
     if (Object.keys(payload).length === 0) {
       setEditing(false);
@@ -200,6 +203,16 @@ export function ProjectDetail() {
               }
               wide
             />
+            <Field
+              label="Logseq page"
+              value={
+                project.logseq_page ? (
+                  <code className={styles.code}>[[{project.logseq_page}]]</code>
+                ) : (
+                  <Muted />
+                )
+              }
+            />
             {project.state_reason && (
               <Field label="State reason" value={project.state_reason} wide />
             )}
@@ -296,7 +309,15 @@ export function ProjectDetail() {
                 value={draft.canonical_location ?? ''}
                 onChange={(e) => setDraft((d) => ({ ...d, canonical_location: e.target.value }))}
                 className={styles.input}
-                placeholder="OneDrive / Logseq path"
+                placeholder="e.g. OneDrive › 01 projects › Project Name"
+              />
+            </EditField>
+            <EditField label="Logseq page">
+              <input
+                value={draft.logseq_page ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, logseq_page: e.target.value }))}
+                className={styles.input}
+                placeholder="Page title (without [[ ]])"
               />
             </EditField>
 

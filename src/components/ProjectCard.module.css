@@ -1,0 +1,88 @@
+.card {
+  background: var(--surface);
+  border-left: 5px solid var(--type-project);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: var(--sp-4) var(--sp-5);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  outline: none;
+}
+
+.card.typeAnnual {
+  border-left-color: var(--type-annual);
+}
+
+.card:hover,
+.card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lifted);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.typeBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--type-project);
+  background: #e8f5fd;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.typeAnnual .typeBadge {
+  color: var(--type-annual);
+  background: #fff3e0;
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--dio-navy);
+  line-height: 1.3;
+  margin: 0;
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: auto;
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border-soft);
+}
+
+.owner {
+  font-size: var(--text-sm);
+  color: var(--dio-grey);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deadline {
+  font-size: var(--text-sm);
+  color: var(--dio-grey-soft);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.muted {
+  color: var(--dio-grey-soft);
+  font-style: italic;
+  font-weight: 400;
+}

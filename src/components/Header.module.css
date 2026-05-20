@@ -4,9 +4,10 @@
   justify-content: space-between;
   gap: var(--sp-4);
   padding: 0 var(--sp-8);
-  background: var(--dio-light);
+  background: var(--surface);
   border-bottom: 1px solid var(--border-soft);
   height: 100%;
+  box-shadow: 0 1px 0 var(--border-soft);
 }
 
 .crumbs {

@@ -1,45 +1,65 @@
 /* ---------------------------------------------------------------
-   Manifest design tokens
-   --------------------------------------------------------------
-   Single source of truth for colours, spacing, and type.
-   Palette lifted from `portfolio.html` so the React app inherits
-   the existing Dio styling without divergence.
-
-   Other CSS Modules import this implicitly via the global
-   `@import` in main.tsx -- the variables are defined on :root.
+   Manifest design tokens — Dio brand palette
+   ---------------------------------------------------------------
+   Colours, spacing, type. Mapped to the official Diocesan brand:
+     Dio Blue #004990 (hero), Dio Light Blue #aec5e7, Dio Red #bf2f38 (sparingly).
+   Section accents: Junior #f7941d, Junior High #27aae1, Senior #50b848.
+   Font: Montserrat (closest free approximation to the licensed Gotham).
    ------------------------------------------------------------- */
 
 :root {
-  /* Dio brand palette */
-  --dio-navy: #1a2b4a;
-  --dio-navy-deep: #0f1d36;
-  --dio-cream: #f5f1e8;
-  --dio-cream-soft: #faf7ef;
-  --dio-gold: #c9a961;
+  /* ---- Official Dio Blue palette -------------------------------- */
+  --dio-navy: #004990;           /* Dio Blue — primary / hero */
+  --dio-navy-deep: #00306e;      /* Deep blue for sidebars / dark surfaces */
+  --dio-navy-darker: #001e4a;    /* Very deep, used for sidebar bg */
+  --dio-blue-light: #aec5e7;     /* Dio Light Blue */
+  --dio-blue-ghost: #e8f0fa;     /* Very light blue — hover states */
+
+  /* ---- Type-specific accents ------------------------------------ */
+  --type-programme: #004990;     /* Programmes = Dio Blue */
+  --type-project: #27aae1;       /* Projects = Junior High blue */
+  --type-annual: #f7941d;        /* Annual cycles = Junior orange */
+
+  /* ---- Accent colours ------------------------------------------- */
+  --dio-red: #bf2f38;            /* Dio Red — use sparingly */
+  --dio-gold: #c9a961;           /* Warm gold — inference/inferred flags */
   --dio-gold-soft: #e5d4a3;
-  --dio-grey: #5a6b7e;
-  --dio-grey-soft: #8a98a8;
+
+  /* ---- Page / surface ------------------------------------------- */
+  --dio-cream: #eef3fa;          /* Page background — cool light blue */
+  --dio-cream-soft: #f6f9fd;     /* Slightly lighter — alternate bg */
   --dio-light: #ffffff;
-  --dio-accent: #6b8caf;
-
-  /* Status colours (matches portfolio.html) */
-  --status-green: #2f7d4e;
-  --status-green-bg: #d9ead0;
-  --status-amber: #a36a14;
-  --status-amber-bg: #f5e4c1;
-  --status-red: #9b2a2a;
-  --status-red-bg: #f0cdcd;
-  --status-placeholder: #6b6b6b;
-  --status-placeholder-bg: #e0e0e0;
-
-  /* Borders, surfaces, shadows */
-  --border: #d8d2c4;
-  --border-soft: #ebe6d8;
   --surface: #ffffff;
-  --shadow: 0 1px 3px rgba(15, 29, 54, 0.06), 0 1px 2px rgba(15, 29, 54, 0.04);
-  --shadow-lifted: 0 4px 12px rgba(15, 29, 54, 0.10), 0 2px 4px rgba(15, 29, 54, 0.05);
+  --surface-hover: #f4f8fc;
 
-  /* Spacing scale (4px grid) */
+  /* ---- Greens for Senior school section (also used in status) --- */
+  --dio-senior-green: #50b848;
+
+  /* ---- Text ----------------------------------------------------- */
+  --dio-grey: #3d5270;           /* Primary secondary text (blue-grey) */
+  --dio-grey-soft: #7e96b0;      /* Muted text */
+  --dio-accent: #27aae1;         /* Accent — Junior High blue */
+
+  /* ---- Status colours ------------------------------------------- */
+  --status-green: #2a7048;
+  --status-green-bg: #d6ead2;
+  --status-amber: #9a6010;
+  --status-amber-bg: #f5e2bc;
+  --status-red: #922828;
+  --status-red-bg: #f0cccc;
+  --status-placeholder: #5e6e80;
+  --status-placeholder-bg: #dce4ec;
+
+  /* ---- Borders -------------------------------------------------- */
+  --border: #c8d8ec;
+  --border-soft: #dde8f6;
+
+  /* ---- Shadows -------------------------------------------------- */
+  --shadow: 0 1px 3px rgba(0, 73, 144, 0.07), 0 1px 2px rgba(0, 73, 144, 0.05);
+  --shadow-lifted: 0 4px 16px rgba(0, 73, 144, 0.12), 0 2px 6px rgba(0, 73, 144, 0.06);
+  --shadow-card: 0 2px 8px rgba(0, 73, 144, 0.09), 0 1px 3px rgba(0, 73, 144, 0.05);
+
+  /* ---- Spacing scale (4 px grid) -------------------------------- */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -50,25 +70,26 @@
   --sp-10: 40px;
   --sp-12: 48px;
 
-  /* Type */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  /* ---- Typography ----------------------------------------------- */
+  /* Montserrat is the closest freely-licensed equivalent to Gotham */
+  --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-serif: Georgia, 'Times New Roman', serif;
   --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
 
-  --text-xs: 11px;
-  --text-sm: 12px;
+  --text-xs:   11px;
+  --text-sm:   12px;
   --text-base: 14px;
-  --text-lg: 16px;
-  --text-xl: 18px;
-  --text-2xl: 22px;
-  --text-3xl: 28px;
+  --text-lg:   16px;
+  --text-xl:   18px;
+  --text-2xl:  22px;
+  --text-3xl:  28px;
 
-  /* Radii */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* ---- Radii ---------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-  /* Layout */
+  /* ---- Layout --------------------------------------------------- */
   --sidebar-w: 240px;
   --header-h: 56px;
   --content-max-w: 1400px;

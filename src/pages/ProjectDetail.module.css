@@ -10,10 +10,11 @@
 }
 
 .title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: var(--text-3xl);
+  font-weight: 700;
   color: var(--dio-navy);
-  letter-spacing: -0.4px;
+  letter-spacing: -0.5px;
 }
 
 .headActions {
@@ -59,7 +60,7 @@
 }
 
 .stateChip[data-state='archived'] {
-  background: var(--dio-gold-soft);
+  background: var(--status-amber-bg);
   color: var(--status-amber);
 }
 
@@ -179,11 +180,12 @@ textarea.input {
 .btnPrimary {
   border-color: var(--dio-navy);
   background: var(--dio-navy);
-  color: var(--dio-cream);
+  color: #ffffff;
 }
 
 .btnPrimary:hover {
   background: var(--dio-navy-deep);
+  border-color: var(--dio-navy-deep);
 }
 
 .btnPrimary:disabled {
