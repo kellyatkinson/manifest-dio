@@ -21,7 +21,7 @@ import { HistoryFeed } from '@/components/HistoryFeed';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
-import { useProject, useUpdateProject, useArchiveProject, useHideProject, useRestoreProject } from '@/hooks/useProjects';
+import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useRestoreProject } from '@/hooks/useProjects';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
 import { formatDateTime, projectTypeLabel } from '@/lib/format';
@@ -48,6 +48,8 @@ export function ProjectDetail() {
   const { data: project, isLoading, error } = useProject(projectId);
   const { data: tasks = [] } = useTasksForProject(projectId);
   const { data: history = [] } = useProjectHistory(projectId);
+  const { data: allProjects = [] } = useProjects('active');
+  const programmes = allProjects.filter((p) => p.project_type === 'programme' && p.id !== projectId);
 
   const updateMut = useUpdateProject(projectId ?? '');
   const archiveMut = useArchiveProject(projectId ?? '');
@@ -76,6 +78,7 @@ export function ProjectDetail() {
       deadline: project.deadline ?? '',
       canonical_location: project.canonical_location ?? '',
       logseq_page: project.logseq_page ?? '',
+      parent_id: project.parent_id ?? '',
     });
     setEditing(true);
   }
@@ -98,6 +101,8 @@ export function ProjectDetail() {
       payload.canonical_location = draft.canonical_location || null;
     if (draft.logseq_page !== (project.logseq_page ?? ''))
       payload.logseq_page = draft.logseq_page || null;
+    if (draft.parent_id !== (project.parent_id ?? ''))
+      payload.parent_id = draft.parent_id || null;
 
     if (Object.keys(payload).length === 0) {
       setEditing(false);
@@ -213,6 +218,20 @@ export function ProjectDetail() {
                 )
               }
             />
+            {project.project_type === 'project' && (
+              <Field
+                label="Parent programme"
+                value={
+                  project.parent_id ? (
+                    allProjects.find((p) => p.id === project.parent_id)?.name ?? (
+                      <span className={styles.muted}>Unknown programme</span>
+                    )
+                  ) : (
+                    <Muted />
+                  )
+                }
+              />
+            )}
             {project.state_reason && (
               <Field label="State reason" value={project.state_reason} wide />
             )}
@@ -320,6 +339,20 @@ export function ProjectDetail() {
                 placeholder="Page title (without [[ ]])"
               />
             </EditField>
+            {(draft.project_type ?? project.project_type) === 'project' && programmes.length > 0 && (
+              <EditField label="Parent programme">
+                <select
+                  value={draft.parent_id ?? ''}
+                  onChange={(e) => setDraft((d) => ({ ...d, parent_id: e.target.value }))}
+                  className={styles.input}
+                >
+                  <option value="">— none (standalone) —</option>
+                  {programmes.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </EditField>
+            )}
 
             <div className={styles.editActions}>
               <button

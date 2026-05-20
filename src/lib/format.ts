@@ -114,6 +114,10 @@ export function humaniseFieldName(field: string): string {
       return 'Next decision';
     case 'canonical_location':
       return 'Canonical location';
+    case 'logseq_page':
+      return 'Logseq page';
+    case 'parent_id':
+      return 'Parent programme';
     case 'project_type':
       return 'Project type';
     case 'status_inferred':

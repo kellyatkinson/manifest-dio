@@ -8,46 +8,81 @@ import styles from './ProgrammeCard.module.css';
 
 interface Props {
   project: Project;
+  children?: Project[];
 }
 
-export function ProgrammeCard({ project }: Props) {
+export function ProgrammeCard({ project, children = [] }: Props) {
   const navigate = useNavigate();
 
   return (
-    <article
-      className={styles.card}
-      onClick={() => navigate(`/portfolio/${project.id}`)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${project.id}`)}
-      aria-label={`Open programme: ${project.name}`}
-    >
-      <div className={styles.header}>
-        <span className={styles.typeBadge}>Programme</span>
-        <StatusPill status={project.status} inferred={project.status_inferred} />
-      </div>
-
-      <h2 className={styles.title}>{project.name}</h2>
-
-      <div className={styles.meta}>
-        <div className={styles.metaItem}>
-          <span className={styles.metaLabel}>Owner</span>
-          <span className={styles.metaValue}>
-            {project.owner ?? <span className={styles.muted}>unassigned</span>}
-          </span>
+    <article className={styles.card}>
+      {/* ── Programme header (clickable) ── */}
+      <div
+        className={styles.main}
+        onClick={() => navigate(`/portfolio/${project.id}`)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${project.id}`)}
+        aria-label={`Open programme: ${project.name}`}
+      >
+        <div className={styles.header}>
+          <span className={styles.typeBadge}>Programme</span>
+          <StatusPill status={project.status} inferred={project.status_inferred} />
         </div>
-        {project.deadline && (
+
+        <h2 className={styles.title}>{project.name}</h2>
+
+        <div className={styles.meta}>
           <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>Deadline</span>
-            <span className={styles.metaValue}>{project.deadline}</span>
+            <span className={styles.metaLabel}>Owner</span>
+            <span className={styles.metaValue}>
+              {project.owner ?? <span className={styles.muted}>unassigned</span>}
+            </span>
+          </div>
+          {project.deadline && (
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>Deadline</span>
+              <span className={styles.metaValue}>{project.deadline}</span>
+            </div>
+          )}
+        </div>
+
+        {project.next_decision && project.next_decision.trim() !== '' && (
+          <div className={styles.decision}>
+            <span className={styles.decisionLabel}>Next decision</span>
+            <span className={styles.decisionText}>{dash(project.next_decision)}</span>
           </div>
         )}
       </div>
 
-      {project.next_decision && project.next_decision.trim() !== '' && (
-        <div className={styles.decision}>
-          <span className={styles.decisionLabel}>Next decision</span>
-          <span className={styles.decisionText}>{dash(project.next_decision)}</span>
+      {/* ── Nested projects ── */}
+      {children.length > 0 && (
+        <div className={styles.children}>
+          <div className={styles.childrenHeader}>
+            <span className={styles.childrenLabel}>Projects</span>
+            <span className={styles.childrenCount}>{children.length}</span>
+          </div>
+          <div className={styles.childGrid}>
+            {children.map((child) => (
+              <div
+                key={child.id}
+                className={styles.childCard}
+                onClick={() => navigate(`/portfolio/${child.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${child.id}`)}
+              >
+                <div className={styles.childTop}>
+                  <StatusPill status={child.status} inferred={child.status_inferred} />
+                </div>
+                <div className={styles.childName}>{child.name}</div>
+                <div className={styles.childMeta}>
+                  <span>{child.owner ?? <span className={styles.muted}>unassigned</span>}</span>
+                  {child.deadline && <span className={styles.childDeadline}>{child.deadline}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </article>

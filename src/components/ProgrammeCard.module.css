@@ -3,19 +3,24 @@
   border-left: 6px solid var(--type-programme);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* ── Programme header ── */
+
+.main {
   padding: var(--sp-5) var(--sp-6);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
+  transition: background 0.12s ease;
   outline: none;
 }
 
-.card:hover,
-.card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lifted);
+.main:hover,
+.main:focus-visible {
+  background: var(--dio-blue-ghost);
 }
 
 .header {
@@ -98,4 +103,89 @@
   font-size: var(--text-base);
   color: var(--dio-grey);
   line-height: 1.5;
+}
+
+/* ── Nested child projects ── */
+
+.children {
+  border-top: 1px solid var(--border-soft);
+  background: var(--dio-cream);
+  padding: var(--sp-4) var(--sp-6);
+}
+
+.childrenHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.childrenLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--dio-grey-soft);
+}
+
+.childrenCount {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--dio-grey-soft);
+  background: var(--border-soft);
+  padding: 1px 7px;
+  border-radius: 20px;
+}
+
+.childGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-3);
+}
+
+.childCard {
+  background: var(--surface);
+  border-left: 4px solid var(--type-project);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  outline: none;
+}
+
+.childCard:hover,
+.childCard:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lifted);
+}
+
+.childTop {
+  display: flex;
+  align-items: center;
+}
+
+.childName {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--dio-navy);
+  line-height: 1.3;
+}
+
+.childMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--dio-grey);
+}
+
+.childDeadline {
+  color: var(--dio-grey-soft);
+  white-space: nowrap;
+  flex-shrink: 0;
 }

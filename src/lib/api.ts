@@ -173,6 +173,7 @@ export interface CreateProjectInput {
   deadline?: string;
   canonical_location?: string;
   logseq_page?: string;
+  parent_id?: string | null;
   status_inferred?: boolean;
   status_confidence?: ConfidenceId;
   owner_inferred?: boolean;
@@ -195,6 +196,7 @@ export interface UpdateProjectInput {
   deadline?: string | null;
   canonical_location?: string | null;
   logseq_page?: string | null;
+  parent_id?: string | null;
   display_order?: number;
 }
 

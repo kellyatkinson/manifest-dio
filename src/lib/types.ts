@@ -45,6 +45,7 @@ export interface Project {
   deadline: string | null;
   canonical_location: string | null;
   logseq_page: string | null;
+  parent_id: string | null;
 
   state: ProjectStateId;
   state_reason: string | null;

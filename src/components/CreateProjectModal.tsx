@@ -1,15 +1,16 @@
 import { useState, type FormEvent } from 'react';
 
 import { useCreateProject } from '@/hooks/useProjects';
-import type { ProjectTypeId, ProjectStatusId } from '@/lib/types';
+import type { Project, ProjectTypeId, ProjectStatusId } from '@/lib/types';
 
 import styles from './CreateProjectModal.module.css';
 
 interface Props {
   onClose: () => void;
+  programmes?: Project[];
 }
 
-export function CreateProjectModal({ onClose }: Props) {
+export function CreateProjectModal({ onClose, programmes = [] }: Props) {
   const createMut = useCreateProject();
 
   const [name, setName] = useState('');
@@ -20,6 +21,7 @@ export function CreateProjectModal({ onClose }: Props) {
   const [nextDecision, setNextDecision] = useState('');
   const [canonicalLocation, setCanonicalLocation] = useState('');
   const [logseqPage, setLogseqPage] = useState('');
+  const [parentId, setParentId] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
@@ -36,6 +38,7 @@ export function CreateProjectModal({ onClose }: Props) {
         next_decision: nextDecision.trim() || undefined,
         canonical_location: canonicalLocation.trim() || undefined,
         logseq_page: logseqPage.trim() || undefined,
+        parent_id: parentId || null,
       });
       onClose();
     } catch (err) {
@@ -124,6 +127,23 @@ export function CreateProjectModal({ onClose }: Props) {
               />
             </div>
           </div>
+
+          {type === 'project' && programmes.length > 0 && (
+            <div className={styles.row}>
+              <label className={styles.label} htmlFor="cp-parent">Parent programme</label>
+              <select
+                id="cp-parent"
+                className={styles.input}
+                value={parentId}
+                onChange={(e) => setParentId(e.target.value)}
+              >
+                <option value="">— none (standalone project) —</option>
+                {programmes.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className={styles.row}>
             <label className={styles.label} htmlFor="cp-next-decision">Next decision</label>

@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------
 
 import { useMemo, useState, type ReactNode } from 'react';
+import type { Project } from '@/lib/types';
 
 import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { ProjectFilters, type FilterState } from '@/components/ProjectFilters';
@@ -81,9 +82,23 @@ export function Portfolio({ mode }: Props) {
     return { total, programmes, projectCount, annual, byStatus };
   }, [projects]);
 
-  // Split board sections
+  // Build parent → children map for board view
+  const childrenByParent = useMemo(() => {
+    const map = new Map<string, Project[]>();
+    for (const p of filtered) {
+      if (p.parent_id) {
+        const list = map.get(p.parent_id) ?? [];
+        list.push(p);
+        map.set(p.parent_id, list);
+      }
+    }
+    return map;
+  }, [filtered]);
+
+  // Split board sections — child projects are shown inside their programme, not in the grid
+  const childIds = new Set(filtered.filter((p) => p.parent_id).map((p) => p.id));
   const programmes = filtered.filter((p) => p.project_type === 'programme');
-  const projectItems = filtered.filter((p) => p.project_type === 'project');
+  const projectItems = filtered.filter((p) => p.project_type === 'project' && !childIds.has(p.id));
   const annualCycles = filtered.filter((p) => p.project_type === 'annual_cycle');
 
   return (
@@ -197,7 +212,11 @@ export function Portfolio({ mode }: Props) {
                 </div>
                 <div className={styles.programmeList}>
                   {programmes.map((p) => (
-                    <ProgrammeCard key={p.id} project={p} />
+                    <ProgrammeCard
+                      key={p.id}
+                      project={p}
+                      children={childrenByParent.get(p.id)}
+                    />
                   ))}
                 </div>
               </section>
@@ -250,7 +269,10 @@ export function Portfolio({ mode }: Props) {
       )}
 
       {showCreate && (
-        <CreateProjectModal onClose={() => setShowCreate(false)} />
+        <CreateProjectModal
+          programmes={projects.filter((p) => p.project_type === 'programme')}
+          onClose={() => setShowCreate(false)}
+        />
       )}
     </div>
   );
