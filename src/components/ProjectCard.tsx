@@ -8,6 +8,7 @@ import styles from './ProjectCard.module.css';
 
 interface Props {
   project: Project;
+  parentName?: string; // name of the parent programme, if any
 }
 
 const typeClass: Record<string, string> = {
@@ -15,8 +16,33 @@ const typeClass: Record<string, string> = {
   annual_cycle: styles.typeAnnual,
 };
 
-export function ProjectCard({ project }: Props) {
+// Deterministic colour index from programme name — consistent across renders,
+// no DB field required. 6 colour slots defined in the CSS module.
+function programmeColorIdx(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) {
+    h = Math.imul(31, h) + name.charCodeAt(i);
+  }
+  return Math.abs(h) % 6;
+}
+
+export function ProjectCard({ project, parentName }: Props) {
   const navigate = useNavigate();
+
+  const programmeTag = parentName !== undefined ? (
+    parentName ? (
+      <span
+        className={`${styles.programmeTag} ${styles[`prog${programmeColorIdx(parentName)}`]}`}
+        title={`Part of programme: ${parentName}`}
+      >
+        ↳ {parentName}
+      </span>
+    ) : (
+      <span className={`${styles.programmeTag} ${styles.progStandalone}`}>
+        Standalone
+      </span>
+    )
+  ) : null;
 
   return (
     <article
@@ -33,6 +59,8 @@ export function ProjectCard({ project }: Props) {
       </div>
 
       <h3 className={styles.title}>{project.name}</h3>
+
+      {programmeTag && <div className={styles.programmeRow}>{programmeTag}</div>}
 
       <div className={styles.footer}>
         <span className={styles.owner}>

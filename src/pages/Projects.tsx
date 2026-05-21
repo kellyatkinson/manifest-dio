@@ -16,6 +16,13 @@ export function Projects() {
   const projectItems = projects.filter((p) => p.project_type === 'project');
   const programmes = projects.filter((p) => p.project_type === 'programme');
 
+  // id → name map for resolving parent programme labels on cards
+  const programmeNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of programmes) map.set(p.id, p.name);
+    return map;
+  }, [programmes]);
+
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     return projectItems.filter((p) => {
@@ -73,7 +80,13 @@ export function Projects() {
         ) : (
           <div className={styles.grid}>
             {filtered.map((p) => (
-              <ProjectCard key={p.id} project={p} />
+              <ProjectCard
+                key={p.id}
+                project={p}
+                parentName={p.parent_id
+                  ? (programmeNameById.get(p.parent_id) ?? 'Programme')
+                  : ''}
+              />
             ))}
           </div>
         )
