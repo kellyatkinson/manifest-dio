@@ -66,7 +66,7 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
           <option value="">All</option>
           <option value="project">Project</option>
           <option value="programme">Programme</option>
-          <option value="annual_cycle">Annual cycle</option>
+          <option value="operational">Operational</option>
         </select>
       </div>
 
@@ -84,7 +84,7 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
 
       {showStateFilter && (
         <div className={styles.group}>
-          <span className={styles.label}>State</span>
+          <span className={styles.label}>Status</span>
           <select
             className={styles.select}
             value={value.state ?? 'active'}

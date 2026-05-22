@@ -1,0 +1,115 @@
+/* ---------------------------------------------------------------
+   WeekRail — what's due in the next 7 days.
+   Sits above the Board view on the Portfolio page.
+   --------------------------------------------------------------- */
+
+.rail {
+  background: var(--dio-cream);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--dio-grey);
+  margin: 0;
+}
+
+.count {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--dio-grey-soft);
+  background: var(--surface);
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.item {
+  flex: 0 0 auto;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--dio-navy);
+  font-size: 12px;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.link:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.kind {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.kind_task {
+  background: var(--dio-blue-ghost);
+  color: var(--dio-navy);
+}
+
+.kind_project {
+  background: rgba(247, 148, 29, 0.12);
+  color: #8a5410;
+}
+
+.titleText {
+  font-weight: 500;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.context {
+  font-size: 11px;
+  color: var(--dio-grey-soft);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.due {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dio-gold);
+  flex-shrink: 0;
+  margin-left: auto;
+}

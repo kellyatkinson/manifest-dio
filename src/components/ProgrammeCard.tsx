@@ -19,10 +19,10 @@ export function ProgrammeCard({ project, children = [] }: Props) {
       {/* ── Programme header (clickable) ── */}
       <div
         className={styles.main}
-        onClick={() => navigate(`/portfolio/${project.id}`)}
+        onClick={() => navigate(`/programmes/${project.id}`)}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${project.id}`)}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(`/programmes/${project.id}`)}
         aria-label={`Open programme: ${project.name}`}
       >
         <div className={styles.header}>
@@ -47,12 +47,14 @@ export function ProgrammeCard({ project, children = [] }: Props) {
           )}
         </div>
 
-        {project.next_decision && project.next_decision.trim() !== '' && (
-          <div className={styles.decision}>
-            <span className={styles.decisionLabel}>Next decision</span>
-            <span className={styles.decisionText}>{dash(project.next_decision)}</span>
-          </div>
-        )}
+        <div className={styles.decision}>
+          <span className={styles.decisionLabel}>Next decision</span>
+          <span className={styles.decisionText}>
+            {project.next_decision && project.next_decision.trim() !== ''
+              ? project.next_decision
+              : dash(null)}
+          </span>
+        </div>
       </div>
 
       {/* ── Nested projects ── */}

@@ -1,9 +1,29 @@
 .card {
   background: var(--surface);
-  border-left: 6px solid var(--type-programme);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  position: relative;
+}
+
+/* Gradient ribbon — soft echo of the Dio ribbon device.
+   Replaces the flat 6px left border with a tapered, glowing strip. */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(
+    180deg,
+    var(--type-programme) 0%,
+    var(--type-programme) 25%,
+    color-mix(in srgb, var(--type-programme), white 35%) 50%,
+    var(--type-programme) 75%,
+    var(--type-programme) 100%
+  );
+  pointer-events: none;
 }
 
 /* ── Programme header ── */

@@ -53,7 +53,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
     >
       <div className={styles.modal} role="dialog" aria-modal aria-label="New project">
         <header className={styles.head}>
-          <h2 className={styles.title}>New item</h2>
+          <h2 className={styles.title}>New project</h2>
           <button type="button" className={styles.close} onClick={onClose} aria-label="Close">
             ✕
           </button>

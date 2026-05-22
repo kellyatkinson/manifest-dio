@@ -76,7 +76,7 @@ export function Projects() {
 
       {!isLoading && !error && (
         filtered.length === 0 ? (
-          <div className={styles.empty}>No projects match the current filters.</div>
+          <div className={styles.empty}>Nothing matches. Try clearing the search?</div>
         ) : (
           <div className={styles.grid}>
             {filtered.map((p) => (

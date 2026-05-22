@@ -13,19 +13,20 @@
 // changes so the deep link works.
 // ---------------------------------------------------------------
 
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
+import { InferencePopover } from '@/components/InferencePopover';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
 import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useRestoreProject } from '@/hooks/useProjects';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
-import { formatDateTime, projectTypeLabel } from '@/lib/format';
-import type { ConfidenceId, HealthId, ProjectStatusId, ProjectTypeId } from '@/lib/types';
+import { dash, formatDateTime, humaniseFieldName, projectTypeLabel } from '@/lib/format';
+import type { ConfidenceId, HealthId, ProjectHistoryRow, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
 import { TaskDetail } from './TaskDetail';
 import styles from './ProjectDetail.module.css';
@@ -60,6 +61,10 @@ export function ProjectDetail() {
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [stateAction, setStateAction] = useState<{ next: ProjectStatusId; label: string } | null>(null);
   const [stateReason, setStateReason] = useState('');
+  const [popover, setPopover] = useState<{
+    field: 'health' | 'owner';
+    anchor: { x: number; y: number };
+  } | null>(null);
 
   if (isLoading) return <div className={styles.placeholder}>Loading project…</div>;
   if (error) return <div className={styles.error}>Could not load project: {(error as Error).message}</div>;
@@ -79,6 +84,7 @@ export function ProjectDetail() {
       primary_location: project.primary_location ?? '',
       logseq_page: project.logseq_page ?? '',
       parent_id: project.parent_id ?? '',
+      description: project.description ?? '',
     });
     setEditing(true);
   }
@@ -103,6 +109,8 @@ export function ProjectDetail() {
       payload.logseq_page = draft.logseq_page || null;
     if (draft.parent_id !== (project.parent_id ?? ''))
       payload.parent_id = draft.parent_id || null;
+    if (draft.description !== (project.description ?? ''))
+      payload.description = draft.description || null;
 
     if (Object.keys(payload).length === 0) {
       setEditing(false);
@@ -138,19 +146,90 @@ export function ProjectDetail() {
     <div>
       {/* ---- Header / state ---- */}
       <header className={styles.head}>
-        <div className={styles.headRow}>
+        <div className={styles.heroRow}>
           <h1 className={styles.title}>{project.name}</h1>
-          <div className={styles.headActions}>
+          <div className={styles.heroActions}>
             {!editing && (
               <button type="button" className={styles.btn} onClick={startEdit}>
                 Edit
               </button>
             )}
-            <div className={styles.stateChip} data-state={project.status}>
-              {STATE_LABEL[project.status]}
-            </div>
+            <select
+              className={`${styles.input} ${styles.heroSelect}`}
+              data-state={project.status}
+              value={project.status}
+              onChange={(e) => {
+                const next = e.target.value as ProjectStatusId;
+                if (next === project.status) return;
+                setStateAction({ next, label: STATE_LABEL[next] });
+                setStateReason('');
+              }}
+              aria-label="Project status"
+            >
+              {STATES.map((s) => (
+                <option key={s} value={s}>
+                  {STATE_LABEL[s]}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+
+        <div className={styles.heroChips}>
+          <span className={styles.typeChip} data-type={project.project_type}>
+            {projectTypeLabel(project.project_type)}
+          </span>
+          <StatusPill
+            status={project.health}
+            inferred={project.health_inferred}
+            onClick={
+              project.health_inferred
+                ? (event) => {
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    setPopover({ field: 'health', anchor: { x: rect.left, y: rect.bottom } });
+                  }
+                : undefined
+            }
+          />
+          {project.project_type === 'project' && project.parent_id && (() => {
+            const parent = allProjects.find((p) => p.id === project.parent_id);
+            return (
+              <button
+                type="button"
+                className={styles.programmePill}
+                onClick={() => navigate(`/programmes/${project.parent_id}`)}
+                title="Open parent programme"
+              >
+                <span aria-hidden>↳ </span>
+                {parent?.name ?? 'Unknown programme'}
+              </button>
+            );
+          })()}
+          <span className={styles.ownerPill}>
+            <span className={styles.ownerLabel}>Owner</span>
+            <span className={styles.ownerName}>
+              {project.owner ?? <span className={styles.muted}>unassigned</span>}
+            </span>
+            {project.owner_inferred && (
+              <button
+                type="button"
+                className={styles.daggerBtn}
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  setPopover({ field: 'owner', anchor: { x: rect.left, y: rect.bottom } });
+                }}
+                title="Inferred — click to confirm or change"
+                aria-label="Inferred owner"
+              >
+                †
+              </button>
+            )}
+            {project.owner_confidence && (
+              <ConfidenceBadge confidence={project.owner_confidence} />
+            )}
+          </span>
+        </div>
+
         <div className={styles.metaRow}>
           <span className={styles.metaLabel}>Updated</span>
           <span>{formatDateTime(project.updated_at)}</span>
@@ -163,77 +242,63 @@ export function ProjectDetail() {
         </div>
       </header>
 
+      {/* ---- Recently rail (last-3 history events, inline with hero) ---- */}
+      {history.length > 0 && !editing && <RecentlyRail history={history} />}
+
       {/* ---- Info card / edit form ---- */}
       <section className={styles.card}>
         {!editing ? (
-          <div className={styles.grid}>
-            <Field label="Type" value={projectTypeLabel(project.project_type)} />
-            <Field
-              label="Health"
-              value={
-                <span className={styles.fieldRow}>
-                  <StatusPill status={project.health} inferred={project.health_inferred} />
-                  {project.health_confidence && (
-                    <ConfidenceBadge confidence={project.health_confidence} />
-                  )}
-                </span>
-              }
-            />
-            <Field
-              label="Owner"
-              value={
-                <span className={styles.fieldRow}>
-                  <span>{project.owner ?? <span className={styles.muted}>unassigned</span>}</span>
-                  {project.owner_inferred && (
-                    <span className={styles.inferredFlag} title="Inferred — needs confirmation">
-                      †
-                    </span>
-                  )}
-                  {project.owner_confidence && (
-                    <ConfidenceBadge confidence={project.owner_confidence} />
-                  )}
-                </span>
-              }
-            />
-            <Field label="Next decision" value={project.next_decision ?? <Muted />} wide />
-            <Field label="Deadline" value={project.deadline ?? <Muted />} />
-            <Field
-              label="Where it lives"
-              value={
-                project.primary_location ? (
-                  <code className={styles.code}>{project.primary_location}</code>
-                ) : (
-                  <Muted />
-                )
-              }
-              wide
-            />
-            <Field
-              label="Notes (Logseq)"
-              value={
-                project.logseq_page ? (
-                  <code className={styles.code}>[[{project.logseq_page}]]</code>
-                ) : (
-                  <Muted />
-                )
-              }
-            />
-            {project.project_type === 'project' && (
-              <Field
-                label="Parent programme"
-                value={
-                  project.parent_id ? (
-                    allProjects.find((p) => p.id === project.parent_id)?.name ?? (
-                      <span className={styles.muted}>Unknown programme</span>
-                    )
-                  ) : (
-                    <Muted />
-                  )
-                }
-              />
+          <div className={styles.panels}>
+            {project.description && (
+              <div className={styles.panel}>
+                <h3 className={styles.panelTitle}>Description</h3>
+                <p className={styles.panelText}>{project.description}</p>
+              </div>
             )}
+            <div className={styles.panel}>
+              <h3 className={styles.panelTitle}>What's happening</h3>
+              <div className={styles.panelGrid}>
+                <Field label="Next decision" value={project.next_decision ?? <Muted />} wide />
+                <Field label="Deadline" value={project.deadline ?? <Muted />} />
+                {project.health_confidence && (
+                  <Field
+                    label="Health confidence"
+                    value={<ConfidenceBadge confidence={project.health_confidence} />}
+                  />
+                )}
+              </div>
+            </div>
+            <div className={styles.panel}>
+              <h3 className={styles.panelTitle}>Where it lives</h3>
+              <div className={styles.panelGrid}>
+                <Field
+                  label="Primary location"
+                  value={
+                    project.primary_location ? (
+                      <code className={styles.code}>{project.primary_location}</code>
+                    ) : (
+                      <Muted />
+                    )
+                  }
+                  wide
+                />
+                <Field
+                  label="Notes (Logseq)"
+                  value={
+                    project.logseq_page ? (
+                      <code className={styles.code}>[[{project.logseq_page}]]</code>
+                    ) : (
+                      <Muted />
+                    )
+                  }
+                />
+              </div>
+            </div>
             {project.status_reason && (
-              <Field label="Status note" value={project.status_reason} wide />
+              <div className={styles.panel}>
+                <h3 className={styles.panelTitle}>Status note</h3>
+                <p className={styles.panelText}>{project.status_reason}</p>
+              </div>
             )}
           </div>
         ) : (
@@ -306,6 +371,15 @@ export function ProjectDetail() {
                   </option>
                 ))}
               </select>
+            </EditField>
+            <EditField label="Description" wide>
+              <textarea
+                rows={3}
+                value={draft.description ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
+                className={styles.input}
+                placeholder="Scope notes, context, anything that doesn't fit the name."
+              />
             </EditField>
             <EditField label="Next decision" wide>
               <textarea
@@ -380,27 +454,6 @@ export function ProjectDetail() {
         )}
       </section>
 
-      {/* ---- State transitions ---- */}
-      <section className={styles.stateRow}>
-        <span className={styles.metaLabel}>State</span>
-        <select
-          className={styles.input}
-          value={project.status}
-          onChange={(e) => {
-            const next = e.target.value as ProjectStatusId;
-            if (next === project.status) return;
-            setStateAction({ next, label: STATE_LABEL[next] });
-            setStateReason('');
-          }}
-        >
-          {STATES.map((s) => (
-            <option key={s} value={s}>
-              {STATE_LABEL[s]}
-            </option>
-          ))}
-        </select>
-      </section>
-
       {/* ---- Tasks ---- */}
       <div className={styles.tasksWrap}>
         <TaskList projectId={project.id} tasks={tasks} />
@@ -451,6 +504,16 @@ export function ProjectDetail() {
           void performStateChange();
         }}
       />
+
+      {/* ---- Inference popover for clicking the inferred dagger / health pill ---- */}
+      {popover && (
+        <InferencePopover
+          project={project}
+          field={popover.field}
+          anchor={popover.anchor}
+          onClose={() => setPopover(null)}
+        />
+      )}
     </div>
   );
 }
@@ -493,4 +556,55 @@ function EditField({
 
 function Muted() {
   return <span className={styles.muted}>—</span>;
+}
+
+// ---------------- Recently rail ----------------
+// Compact "last 3 change groups" preview shown inline with the hero,
+// so the most recent activity is visible without expanding the full history.
+
+function RecentlyRail({ history }: { history: ProjectHistoryRow[] }) {
+  const groups = useMemo(() => {
+    const map = new Map<string, ProjectHistoryRow[]>();
+    for (const r of history) {
+      const existing = map.get(r.change_group_id) ?? [];
+      existing.push(r);
+      map.set(r.change_group_id, existing);
+    }
+    return Array.from(map.entries())
+      .map(([id, rows]) => ({
+        id,
+        rows,
+        changedAt: rows[0].changed_at,
+      }))
+      .sort((a, b) => b.changedAt.localeCompare(a.changedAt))
+      .slice(0, 3);
+  }, [history]);
+
+  if (groups.length === 0) return null;
+
+  return (
+    <aside className={styles.recently} aria-label="Recent activity">
+      <span className={styles.recentlyLabel}>Recently</span>
+      <ul className={styles.recentlyList}>
+        {groups.map((g) => (
+          <li key={g.id} className={styles.recentlyItem}>
+            {g.rows.length === 1 ? (
+              <>
+                <span className={styles.recentlyField}>
+                  {humaniseFieldName(g.rows[0].field_name)}
+                </span>
+                <span className={styles.recentlyArrow}> → </span>
+                <span className={styles.recentlyValue}>{dash(g.rows[0].new_value)}</span>
+              </>
+            ) : (
+              <span className={styles.recentlyField}>
+                {g.rows.length} fields updated
+              </span>
+            )}
+            <span className={styles.recentlyTime}> · {formatDateTime(g.changedAt)}</span>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
 }

@@ -46,6 +46,7 @@ export interface Project {
   primary_location: string | null;
   logseq_page: string | null;
   parent_id: string | null;
+  description: string | null;
 
   status: ProjectStatusId;
   status_reason: string | null;

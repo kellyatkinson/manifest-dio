@@ -27,7 +27,7 @@ export function Programmes() {
     <div>
       <header className={styles.head}>
         <h1 className={styles.title}>Programmes</h1>
-        <p className={styles.sub}>Strategic initiatives and multi-project programmes.</p>
+        <p className={styles.sub}>Where related projects live together.</p>
       </header>
 
       {isLoading && <div className={styles.note}>Loading…</div>}
@@ -37,7 +37,7 @@ export function Programmes() {
 
       {!isLoading && !error && (
         programmes.length === 0 ? (
-          <div className={styles.empty}>No active programmes.</div>
+          <div className={styles.empty}>No programmes yet. Click + New programme to group related projects.</div>
         ) : (
           <>
             <div className={styles.list}>

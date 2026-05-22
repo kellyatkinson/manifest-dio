@@ -238,3 +238,255 @@ textarea.input {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================== */
+/* Wave 1 — Hero, panels, Recently rail                            */
+/* ============================================================== */
+
+/* ---- Hero (replaces flat headRow / headActions) -------------- */
+
+.heroRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.heroSelect {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 5px 28px 5px 12px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  width: auto;
+  min-width: 110px;
+  cursor: pointer;
+  background-color: var(--surface);
+  color: var(--dio-grey);
+}
+
+.heroSelect[data-state='active'] {
+  background-color: var(--status-green-bg);
+  color: var(--status-green);
+  border-color: transparent;
+}
+
+.heroSelect[data-state='archived'] {
+  background-color: var(--status-amber-bg);
+  color: var(--status-amber);
+  border-color: transparent;
+}
+
+.heroSelect[data-state='excluded'] {
+  background-color: var(--status-placeholder-bg);
+  color: var(--status-placeholder);
+  border-color: transparent;
+}
+
+/* ---- Hero chip strip ----------------------------------------- */
+
+.heroChips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.typeChip {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--dio-blue-ghost);
+  color: var(--type-programme);
+  border: 1px solid var(--dio-blue-light);
+}
+
+.typeChip[data-type='project'] {
+  color: var(--type-project);
+  background: rgba(39, 170, 225, 0.10);
+  border-color: rgba(39, 170, 225, 0.30);
+}
+
+.typeChip[data-type='operational'] {
+  color: var(--type-annual);
+  background: rgba(247, 148, 29, 0.10);
+  border-color: rgba(247, 148, 29, 0.35);
+}
+
+.programmePill {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 4px 11px;
+  border-radius: 11px;
+  background: var(--dio-blue-ghost);
+  color: var(--dio-navy);
+  border: 1px solid var(--dio-blue-light);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  transition: background 0.12s ease;
+}
+
+.programmePill:hover {
+  background: var(--dio-blue-light);
+}
+
+.ownerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 11px;
+  background: var(--dio-cream-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--dio-navy);
+}
+
+.ownerLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--dio-grey-soft);
+  font-weight: 700;
+}
+
+.ownerName {
+  font-weight: 500;
+}
+
+.daggerBtn {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--dio-gold);
+  background: transparent;
+  border: 1px dashed transparent;
+  border-radius: 50%;
+  padding: 0 5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.daggerBtn:hover {
+  border-color: var(--dio-gold);
+}
+
+/* ---- Recently rail (last-3 history events) ------------------- */
+
+.recently {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--dio-cream-soft);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--dio-gold);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+  font-size: 12px;
+}
+
+.recentlyLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dio-grey-soft);
+  flex-shrink: 0;
+}
+
+.recentlyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.recentlyItem {
+  display: inline-flex;
+  align-items: center;
+  color: var(--dio-grey);
+}
+
+.recentlyField {
+  color: var(--dio-navy);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.recentlyArrow {
+  color: var(--dio-grey-soft);
+}
+
+.recentlyValue {
+  font-style: italic;
+  color: var(--dio-grey);
+}
+
+.recentlyTime {
+  color: var(--dio-grey-soft);
+  margin-left: 4px;
+}
+
+/* ---- Panels (replaces flat info-card grid) ------------------- */
+
+.panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.panel {
+  background: transparent;
+}
+
+.panelTitle {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dio-grey-soft);
+  margin: 0 0 var(--sp-3) 0;
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4) var(--sp-6);
+}
+
+.panelText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dio-navy);
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .panelGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -49,7 +49,7 @@ export function Tasks() {
   return (
     <div>
       <header className={styles.head}>
-        <h1 className={styles.title}>All tasks</h1>
+        <h1 className={styles.title}>Tasks</h1>
         <p className={styles.sub}>Tasks across all projects, soonest due date first.</p>
       </header>
 

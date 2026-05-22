@@ -72,7 +72,7 @@ export function ProjectTable({ projects }: Props) {
   if (projects.length === 0) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.empty}>No projects match the current filters.</div>
+        <div className={styles.empty}>Nothing matches. Try clearing the search?</div>
       </div>
     );
   }

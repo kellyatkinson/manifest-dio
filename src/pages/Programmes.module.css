@@ -4,9 +4,11 @@
 
 .title {
   font-family: var(--font-sans);
-  font-size: var(--text-3xl);
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 300;
   color: var(--dio-navy);
+  letter-spacing: -1px;
+  line-height: 1.05;
   margin: 0 0 var(--sp-1);
 }
 

@@ -1,0 +1,215 @@
+/* ---------------------------------------------------------------
+   PulsePanel — composite portfolio summary panel.
+   Replaces the three small tiles with a single rich block.
+   --------------------------------------------------------------- */
+
+.pulse {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+  margin-bottom: var(--sp-5);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.pulse::before {
+  /* Subtle gold ribbon to echo the brand */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    var(--dio-gold) 0%,
+    var(--dio-gold) 40%,
+    var(--dio-gold-soft) 60%,
+    var(--dio-gold) 100%
+  );
+  opacity: 0.6;
+}
+
+.headRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--dio-navy);
+  margin: 0;
+}
+
+.totalChip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dio-grey);
+  background: var(--dio-blue-ghost);
+  padding: 3px 10px;
+  border-radius: 11px;
+}
+
+/* ---- Stacked health bar ---- */
+
+.bar {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--border-soft);
+  margin-bottom: var(--sp-3);
+  /* Animate proportional changes when filters update counts */
+  transition: opacity 0.3s ease;
+}
+
+.barSeg {
+  height: 100%;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.seg_green       { background: var(--status-green); }
+.seg_amber       { background: var(--status-amber); }
+.seg_red         { background: var(--status-red); }
+.seg_placeholder { background: var(--status-placeholder); }
+
+/* ---- Legend ---- */
+
+.legend {
+  list-style: none;
+  margin: 0 0 var(--sp-4) 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot_green       { background: var(--status-green); }
+.dot_amber       { background: var(--status-amber); }
+.dot_red         { background: var(--status-red); }
+.dot_placeholder { background: var(--status-placeholder); }
+
+.legendCount {
+  font-weight: 700;
+  color: var(--dio-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.legendLabel {
+  color: var(--dio-grey-soft);
+}
+
+/* ---- Footer (Mix + Needs attention) ---- */
+
+.footRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.mix {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.mixItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.mixDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mix_programme   { background: var(--type-programme); }
+.mix_project     { background: var(--type-project); }
+.mix_operational { background: var(--type-annual); }
+
+.mixValue {
+  color: var(--dio-navy);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.mixLabel {
+  color: var(--dio-grey);
+}
+
+.divider {
+  color: var(--dio-grey-soft);
+  font-weight: 700;
+}
+
+.attention {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dio-cream);
+  padding: 4px 12px;
+  border-radius: 11px;
+}
+
+.attentionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--dio-grey-soft);
+}
+
+.attentionValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dio-grey);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.attentionActive {
+  color: var(--status-red);
+}
+
+@media (max-width: 640px) {
+  .footRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .legend {
+    gap: var(--sp-3);
+  }
+}

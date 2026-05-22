@@ -187,6 +187,7 @@ export interface CreateProjectInput {
   primary_location?: string;
   logseq_page?: string;
   parent_id?: string | null;
+  description?: string | null;
   health_inferred?: boolean;
   health_confidence?: ConfidenceId;
   owner_inferred?: boolean;
@@ -210,6 +211,7 @@ export interface UpdateProjectInput {
   primary_location?: string | null;
   logseq_page?: string | null;
   parent_id?: string | null;
+  description?: string | null;
   display_order?: number;
 }
 

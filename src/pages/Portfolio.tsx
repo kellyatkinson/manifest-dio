@@ -2,22 +2,33 @@
 // Portfolio page — board + table view
 // ---------------------------------------------------------------
 // Board view (default): Programmes (large cards) → Projects (grid)
-//   → Annual cycles (compact rows).
+//   → Operational (compact rows).
 // Table view: the original sortable table.
 // Mode prop controls whether we show active or archived rows.
+//
+// Filter state is mirrored to URL search params so a reload (or a
+// shared link) preserves the view.
 // ---------------------------------------------------------------
 
-import { useMemo, useState, type ReactNode } from 'react';
-import type { Project } from '@/lib/types';
+import { useMemo, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { CreateProjectModal } from '@/components/CreateProjectModal';
+import { PortfolioMap } from '@/components/PortfolioMap';
 import { ProjectFilters, type FilterState } from '@/components/ProjectFilters';
 import { ProjectTable } from '@/components/ProjectTable';
 import { ProgrammeCard } from '@/components/ProgrammeCard';
 import { ProjectCard } from '@/components/ProjectCard';
+import { PulsePanel } from '@/components/PulsePanel';
+import { WeekRail } from '@/components/WeekRail';
 import { useProjects } from '@/hooks/useProjects';
-import type { ProjectStatusId } from '@/lib/types';
-import { statusLabel } from '@/lib/format';
+import { useAllTasks } from '@/hooks/useTasks';
+import type {
+  HealthId,
+  Project,
+  ProjectStatusId,
+  ProjectTypeId,
+} from '@/lib/types';
 
 import styles from './Portfolio.module.css';
 
@@ -25,28 +36,65 @@ interface Props {
   mode: 'active' | 'archived';
 }
 
-const INITIAL_FILTERS: FilterState = {
-  search: '',
-  status: '',
-  type: '',
-  owner: '',
-  state: 'active',
-};
+type ViewMode = 'board' | 'table' | 'map';
 
-type ViewMode = 'board' | 'table';
+const VALID_HEALTH: ReadonlySet<HealthId> = new Set(['green', 'amber', 'red', 'placeholder']);
+const VALID_TYPE: ReadonlySet<ProjectTypeId> = new Set(['project', 'programme', 'operational']);
+const VALID_STATUS: ReadonlySet<ProjectStatusId> = new Set(['active', 'archived', 'excluded']);
 
 export function Portfolio({ mode }: Props) {
-  const [filters, setFilters] = useState<FilterState>({
-    ...INITIAL_FILTERS,
-    state: mode === 'archived' ? 'archived' : 'active',
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('board');
   const [showCreate, setShowCreate] = useState(false);
+
+  // Derive FilterState from URL — keeps filters shareable and reload-safe.
+  const filters = useMemo<FilterState>(() => {
+    const healthParam = searchParams.get('health') ?? '';
+    const typeParam = searchParams.get('type') ?? '';
+    const statusParam = searchParams.get('status') ?? '';
+    const defaultStatus: ProjectStatusId | 'all' = mode === 'archived' ? 'archived' : 'active';
+    const stateValue: ProjectStatusId | 'all' =
+      mode === 'archived'
+        ? 'archived'
+        : statusParam === 'all'
+          ? 'all'
+          : VALID_STATUS.has(statusParam as ProjectStatusId)
+            ? (statusParam as ProjectStatusId)
+            : defaultStatus;
+
+    return {
+      search: searchParams.get('q') ?? '',
+      status: VALID_HEALTH.has(healthParam as HealthId) ? (healthParam as HealthId) : '',
+      type: VALID_TYPE.has(typeParam as ProjectTypeId) ? (typeParam as ProjectTypeId) : '',
+      owner: searchParams.get('owner') ?? '',
+      state: stateValue,
+    };
+  }, [searchParams, mode]);
+
+  const setFilters = useCallback(
+    (next: FilterState) => {
+      const params = new URLSearchParams(searchParams);
+      if (next.search) params.set('q', next.search);
+      else params.delete('q');
+      if (next.status) params.set('health', next.status);
+      else params.delete('health');
+      if (next.type) params.set('type', next.type);
+      else params.delete('type');
+      if (next.owner) params.set('owner', next.owner);
+      else params.delete('owner');
+      const defaultStatus = mode === 'archived' ? 'archived' : 'active';
+      if (next.state && next.state !== defaultStatus) params.set('status', next.state);
+      else params.delete('status');
+      setSearchParams(params, { replace: true });
+    },
+    [searchParams, setSearchParams, mode],
+  );
 
   const queryState: ProjectStatusId | 'all' =
     mode === 'archived' ? 'archived' : filters.state ?? 'active';
 
   const { data: projects = [], isLoading, error } = useProjects(queryState);
+  const { data: tasks = [] } = useAllTasks(false);
 
   const ownerOptions = useMemo(() => {
     const set = new Set<string>();
@@ -63,7 +111,14 @@ export function Portfolio({ mode }: Props) {
       if (filters.type && p.project_type !== filters.type) return false;
       if (filters.owner && (p.owner ?? '') !== filters.owner) return false;
       if (term) {
-        const haystack = [p.name, p.next_decision ?? '', p.owner ?? '', p.deadline ?? '', p.primary_location ?? '']
+        const haystack = [
+          p.name,
+          p.next_decision ?? '',
+          p.owner ?? '',
+          p.deadline ?? '',
+          p.primary_location ?? '',
+          p.description ?? '',
+        ]
           .join(' ')
           .toLowerCase();
         if (!haystack.includes(term)) return false;
@@ -71,16 +126,6 @@ export function Portfolio({ mode }: Props) {
       return true;
     });
   }, [projects, filters]);
-
-  const summary = useMemo(() => {
-    const total = projects.length;
-    const programmes = projects.filter((p) => p.project_type === 'programme').length;
-    const projectCount = projects.filter((p) => p.project_type === 'project').length;
-    const annual = projects.filter((p) => p.project_type === 'operational').length;
-    const byStatus: Record<string, number> = { red: 0, amber: 0, green: 0, placeholder: 0 };
-    for (const p of projects) byStatus[p.health]++;
-    return { total, programmes, projectCount, annual, byStatus };
-  }, [projects]);
 
   // Build parent → children map for board view
   const childrenByParent = useMemo(() => {
@@ -99,7 +144,7 @@ export function Portfolio({ mode }: Props) {
   const childIds = new Set(filtered.filter((p) => p.parent_id).map((p) => p.id));
   const programmes = filtered.filter((p) => p.project_type === 'programme');
   const projectItems = filtered.filter((p) => p.project_type === 'project' && !childIds.has(p.id));
-  const annualCycles = filtered.filter((p) => p.project_type === 'operational');
+  const operationalItems = filtered.filter((p) => p.project_type === 'operational');
 
   return (
     <div>
@@ -112,8 +157,8 @@ export function Portfolio({ mode }: Props) {
             </h1>
             <p className={styles.sub}>
               {mode === 'archived'
-                ? 'Projects that have been closed. Restore from the detail page if needed.'
-                : 'BIM portfolio inventory — click any item to view details, tasks and history.'}
+                ? 'Projects we finished. Restore one if you need to.'
+                : "Everything in flight, and what's next."}
             </p>
           </div>
 
@@ -130,6 +175,13 @@ export function Portfolio({ mode }: Props) {
                 </button>
                 <button
                   type="button"
+                  className={`${styles.toggleBtn} ${viewMode === 'map' ? styles.toggleActive : ''}`}
+                  onClick={() => setViewMode('map')}
+                >
+                  Map
+                </button>
+                <button
+                  type="button"
                   className={`${styles.toggleBtn} ${viewMode === 'table' ? styles.toggleActive : ''}`}
                   onClick={() => setViewMode('table')}
                 >
@@ -141,37 +193,19 @@ export function Portfolio({ mode }: Props) {
                 className={styles.createBtn}
                 onClick={() => setShowCreate(true)}
               >
-                + New item
+                + New project
               </button>
             </div>
           )}
         </div>
       </header>
 
-      {/* Summary tiles (active view only) */}
-      {mode === 'active' && (
-        <div className={styles.tiles}>
-          <Tile label="Active" value={summary.total} accent="blue" />
-          <Tile
-            label="Mix"
-            value={`${summary.projectCount}P · ${summary.programmes}Pg · ${summary.annual}A`}
-            sub="projects · programmes · annual"
-            accent="blue"
-          />
-          <Tile
-            label="Status"
-            value={
-              <span className={styles.statusRow}>
-                <StatusDot tone="red" /> {summary.byStatus.red}
-                <StatusDot tone="amber" /> {summary.byStatus.amber}
-                <StatusDot tone="green" /> {summary.byStatus.green}
-                <StatusDot tone="placeholder" /> {summary.byStatus.placeholder}
-              </span>
-            }
-            sub={`${statusLabel('red')} · ${statusLabel('amber')} · ${statusLabel('green')} · ${statusLabel('placeholder')}`}
-            accent="blue"
-          />
-        </div>
+      {/* Pulse summary panel (replaces 3 flat tiles) */}
+      {mode === 'active' && <PulsePanel projects={projects} />}
+
+      {/* This week — due within 7 days */}
+      {mode === 'active' && viewMode === 'board' && (
+        <WeekRail projects={projects} tasks={tasks} />
       )}
 
       {/* Filters */}
@@ -194,10 +228,12 @@ export function Portfolio({ mode }: Props) {
       {!isLoading && !error && (
         viewMode === 'table' || mode === 'archived' ? (
           <ProjectTable projects={filtered} />
+        ) : viewMode === 'map' ? (
+          <PortfolioMap projects={filtered} />
         ) : (
           <div className={styles.board}>
             {filtered.length === 0 && (
-              <div className={styles.empty}>No items match the current filters.</div>
+              <div className={styles.empty}>Nothing matches. Try clearing the search?</div>
             )}
 
             {/* Programmes */}
@@ -240,18 +276,18 @@ export function Portfolio({ mode }: Props) {
               </section>
             )}
 
-            {/* Annual cycles */}
-            {annualCycles.length > 0 && (
+            {/* Operational */}
+            {operationalItems.length > 0 && (
               <section className={styles.section}>
                 <div className={styles.sectionHead}>
                   <h2 className={styles.sectionTitle}>
                     <span className={`${styles.sectionDot} ${styles.dotAnnual}`} />
-                    Annual cycles
+                    Operational
                   </h2>
-                  <span className={styles.sectionCount}>{annualCycles.length}</span>
+                  <span className={styles.sectionCount}>{operationalItems.length}</span>
                 </div>
                 <div className={styles.projectGrid}>
-                  {annualCycles.map((p) => (
+                  {operationalItems.map((p) => (
                     <ProjectCard key={p.id} project={p} />
                   ))}
                 </div>
@@ -276,30 +312,4 @@ export function Portfolio({ mode }: Props) {
       )}
     </div>
   );
-}
-
-// ---- Internal helpers ----
-
-function Tile({
-  label,
-  value,
-  sub,
-  accent,
-}: {
-  label: string;
-  value: ReactNode;
-  sub?: string;
-  accent?: string;
-}) {
-  return (
-    <div className={`${styles.tile} ${accent === 'blue' ? styles.tileBlue : ''}`}>
-      <div className={styles.tileLabel}>{label}</div>
-      <div className={styles.tileValue}>{value}</div>
-      {sub && <div className={styles.tileSub}>{sub}</div>}
-    </div>
-  );
-}
-
-function StatusDot({ tone }: { tone: 'red' | 'amber' | 'green' | 'placeholder' }) {
-  return <span className={`${styles.dot} ${styles[`dot_${tone}`]}`} />;
 }

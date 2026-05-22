@@ -13,21 +13,54 @@
   margin-bottom: var(--sp-4);
 }
 
+.filigree {
+  display: block;
+  height: 14px;
+  width: 60px;
+  color: var(--dio-gold);
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
 .brandTitle {
   font-family: var(--font-sans);
-  font-size: var(--text-xl);
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -1px;
   color: #ffffff;
+  line-height: 1;
 }
 
 .brandSub {
   font-size: var(--text-xs);
   color: var(--dio-blue-light);
-  margin-top: 3px;
+  margin-top: 5px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   opacity: 0.75;
+}
+
+.brandFoot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--sp-4) var(--sp-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.brandFoot .filigree {
+  margin-bottom: 0;
+  opacity: 0.55;
+}
+
+.brandFootText {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
 }
 
 .nav {
