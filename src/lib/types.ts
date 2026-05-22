@@ -13,9 +13,9 @@
 
 // ---- Reference enums (text PKs in the DB) -------------------------------
 
-export type ProjectTypeId = 'project' | 'programme' | 'annual_cycle';
-export type ProjectStatusId = 'green' | 'amber' | 'red' | 'placeholder';
-export type ProjectStateId = 'active' | 'archived' | 'hidden_out_of_scope';
+export type ProjectTypeId = 'project' | 'programme' | 'operational';
+export type HealthId = 'green' | 'amber' | 'red' | 'placeholder';
+export type ProjectStatusId = 'active' | 'archived' | 'excluded';
 export type ConfidenceId = 'high' | 'medium' | 'low';
 export type TaskStatusId = 'todo' | 'in_progress' | 'done' | 'cancelled';
 
@@ -28,8 +28,8 @@ export interface ReferenceRow<Id extends string = string> {
 }
 
 export type ProjectType = ReferenceRow<ProjectTypeId>;
+export type HealthRef = ReferenceRow<HealthId>;
 export type ProjectStatusRef = ReferenceRow<ProjectStatusId>;
-export type ProjectStateRef = ReferenceRow<ProjectStateId>;
 export type ConfidenceLevel = ReferenceRow<ConfidenceId>;
 export type TaskStatus = ReferenceRow<TaskStatusId>;
 
@@ -40,20 +40,20 @@ export interface Project {
   name: string;
   project_type: ProjectTypeId;
   owner: string | null;
-  status: ProjectStatusId;
+  health: HealthId;
   next_decision: string | null;
   deadline: string | null;
-  canonical_location: string | null;
+  primary_location: string | null;
   logseq_page: string | null;
   parent_id: string | null;
 
-  state: ProjectStateId;
-  state_reason: string | null;
-  state_changed_at: string | null;
-  state_changed_by_email: string | null;
+  status: ProjectStatusId;
+  status_reason: string | null;
+  status_changed_at: string | null;
+  status_changed_by_email: string | null;
 
-  status_inferred: boolean;
-  status_confidence: ConfidenceId | null;
+  health_inferred: boolean;
+  health_confidence: ConfidenceId | null;
   owner_inferred: boolean;
   owner_confidence: ConfidenceId | null;
 

@@ -18,7 +18,7 @@ import type {
   Decision,
   Project,
   ProjectHistoryRow,
-  ProjectStatusId,
+  HealthId,
   ProjectTypeId,
   RpcOk,
   Setting,
@@ -26,8 +26,8 @@ import type {
   TaskHistoryRow,
   TaskStatusId,
   ProjectType,
+  HealthRef,
   ProjectStatusRef,
-  ProjectStateRef,
   ConfidenceLevel,
   TaskStatus,
 } from './types';
@@ -64,12 +64,12 @@ export async function callRpc<T = Record<string, unknown>>(
 // Reads (PostgREST -- direct table selects)
 // =========================================================================
 
-export async function listProjects(state: 'active' | 'archived' | 'hidden_out_of_scope' | 'all' = 'active'): Promise<Project[]> {
+export async function listProjects(status: 'active' | 'archived' | 'excluded' | 'all' = 'active'): Promise<Project[]> {
   let query = supabase.from('projects').select('*').order('display_order', { ascending: true });
-  if (state !== 'all') {
-    query = supabase.from('projects').select('*').eq('state', state).order(
-      state === 'active' ? 'display_order' : 'updated_at',
-      { ascending: state === 'active' },
+  if (status !== 'all') {
+    query = supabase.from('projects').select('*').eq('status', status).order(
+      status === 'active' ? 'display_order' : 'updated_at',
+      { ascending: status === 'active' },
     );
   }
   const { data, error } = await query;
@@ -147,16 +147,16 @@ export async function listProjectTypes(): Promise<ProjectType[]> {
   return (data ?? []) as ProjectType[];
 }
 
-export async function listProjectStatuses(): Promise<ProjectStatusRef[]> {
-  const { data, error } = await supabase.from('project_statuses').select('*').order('display_order');
+export async function listProjectStatuses(): Promise<HealthRef[]> {
+  const { data, error } = await supabase.from('health_levels').select('*').order('display_order');
   if (error) throw new Error(`listProjectStatuses: ${error.message}`);
-  return (data ?? []) as ProjectStatusRef[];
+  return (data ?? []) as HealthRef[];
 }
 
-export async function listProjectStates(): Promise<ProjectStateRef[]> {
-  const { data, error } = await supabase.from('project_states').select('*').order('display_order');
+export async function listProjectStates(): Promise<ProjectStatusRef[]> {
+  const { data, error } = await supabase.from('project_statuses').select('*').order('display_order');
   if (error) throw new Error(`listProjectStates: ${error.message}`);
-  return (data ?? []) as ProjectStateRef[];
+  return (data ?? []) as ProjectStatusRef[];
 }
 
 export async function listConfidenceLevels(): Promise<ConfidenceLevel[]> {
@@ -180,15 +180,15 @@ export async function listTaskStatuses(): Promise<TaskStatus[]> {
 export interface CreateProjectInput {
   name: string;
   project_type: ProjectTypeId;
-  status: ProjectStatusId;
+  health: HealthId;
   owner?: string;
   next_decision?: string;
   deadline?: string;
-  canonical_location?: string;
+  primary_location?: string;
   logseq_page?: string;
   parent_id?: string | null;
-  status_inferred?: boolean;
-  status_confidence?: ConfidenceId;
+  health_inferred?: boolean;
+  health_confidence?: ConfidenceId;
   owner_inferred?: boolean;
   owner_confidence?: ConfidenceId;
   display_order?: number;
@@ -202,12 +202,12 @@ export interface UpdateProjectInput {
   name?: string;
   project_type?: ProjectTypeId;
   owner?: string | null;
-  status?: ProjectStatusId;
-  status_confidence?: ConfidenceId;
+  health?: HealthId;
+  health_confidence?: ConfidenceId;
   owner_confidence?: ConfidenceId;
   next_decision?: string | null;
   deadline?: string | null;
-  canonical_location?: string | null;
+  primary_location?: string | null;
   logseq_page?: string | null;
   parent_id?: string | null;
   display_order?: number;
@@ -221,10 +221,10 @@ export function adminUpdateProject(projectId: string, payload: UpdateProjectInpu
   });
 }
 
-export function adminSetStatus(projectId: string, status: ProjectStatusId, confidence?: ConfidenceId, note?: string) {
-  return callRpc('admin_set_status', {
+export function adminSetHealth(projectId: string, health: HealthId, confidence?: ConfidenceId, note?: string) {
+  return callRpc('admin_set_health', {
     p_project_id: projectId,
-    p_status: status,
+    p_health: health,
     p_confidence: confidence ?? null,
     p_note: note ?? null,
   });
@@ -239,7 +239,7 @@ export function adminSetOwner(projectId: string, owner: string | null, confidenc
   });
 }
 
-export function adminConfirmInference(projectId: string, field: 'status' | 'owner') {
+export function adminConfirmInference(projectId: string, field: 'health' | 'owner') {
   return callRpc('admin_confirm_inference', { p_project_id: projectId, p_field: field });
 }
 

@@ -6,13 +6,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import type { ConfidenceId, Project, ProjectStatusId } from '@/lib/types';
+import type { ConfidenceId, Project, HealthId } from '@/lib/types';
 import { statusLabel } from '@/lib/format';
-import { useConfirmInference, useSetOwner, useSetStatus } from '@/hooks/useProjects';
+import { useConfirmInference, useSetOwner, useSetHealth } from '@/hooks/useProjects';
 
 import styles from './InferencePopover.module.css';
 
-type Field = 'status' | 'owner';
+type Field = 'health' | 'owner';
 
 interface Props {
   project: Project;
@@ -21,17 +21,17 @@ interface Props {
   onClose: () => void;
 }
 
-const STATUS_OPTIONS: ProjectStatusId[] = ['green', 'amber', 'red', 'placeholder'];
+const STATUS_OPTIONS: HealthId[] = ['green', 'amber', 'red', 'placeholder'];
 
 export function InferencePopover({ project, field, anchor, onClose }: Props) {
   const popRef = useRef<HTMLDivElement | null>(null);
   const confirmMut = useConfirmInference(project.id);
-  const setStatusMut = useSetStatus(project.id);
+  const setHealthMut = useSetHealth(project.id);
   const setOwnerMut = useSetOwner(project.id);
 
   const [draftOwner, setDraftOwner] = useState<string>(project.owner ?? '');
   const [confidence, setConfidence] = useState<ConfidenceId>(
-    (field === 'status' ? project.status_confidence : project.owner_confidence) ?? 'medium',
+    (field === 'health' ? project.health_confidence : project.owner_confidence) ?? 'medium',
   );
 
   useEffect(() => {
@@ -53,8 +53,8 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
 
   if (!anchor) return null;
 
-  const isStatus = field === 'status';
-  const isInferred = isStatus ? project.status_inferred : project.owner_inferred;
+  const isHealth = field === 'health';
+  const isInferred = isHealth ? project.health_inferred : project.owner_inferred;
 
   // Position the popover next to the anchor point. Keep within viewport.
   const left = Math.min(anchor.x, window.innerWidth - 260);
@@ -70,9 +70,9 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
         aria-label={`Edit ${field}`}
         style={{ left, top }}
       >
-        <div className={styles.label}>{field === 'status' ? 'Status' : 'Owner'}</div>
+        <div className={styles.label}>{field === 'health' ? 'Health' : 'Owner'}</div>
         <div className={styles.current}>
-          Current: <strong>{isStatus ? statusLabel(project.status) : project.owner ?? 'unassigned'}</strong>
+          Current: <strong>{isHealth ? statusLabel(project.health) : project.owner ?? 'unassigned'}</strong>
           {isInferred && ' (inferred)'}
         </div>
 
@@ -91,7 +91,7 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
 
         <div className={styles.divider} />
 
-        {isStatus ? (
+        {isHealth ? (
           <>
             <div className={styles.label}>Change to</div>
             <div className={styles.changeList}>
@@ -100,9 +100,9 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
                   key={s}
                   type="button"
                   className={styles.btn}
-                  disabled={s === project.status}
+                  disabled={s === project.health}
                   onClick={async () => {
-                    await setStatusMut.mutateAsync({ status: s, confidence });
+                    await setHealthMut.mutateAsync({ health: s, confidence });
                     onClose();
                   }}
                 >

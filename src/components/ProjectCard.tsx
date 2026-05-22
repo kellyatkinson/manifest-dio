@@ -55,7 +55,7 @@ export function ProjectCard({ project, parentName }: Props) {
     >
       <div className={styles.header}>
         <span className={styles.typeBadge}>{projectTypeLabel(project.project_type)}</span>
-        <StatusPill status={project.status} inferred={project.status_inferred} />
+        <StatusPill status={project.health} inferred={project.health_inferred} />
       </div>
 
       <h3 className={styles.title}>{project.name}</h3>

@@ -64,7 +64,7 @@
   color: var(--status-amber);
 }
 
-.stateChip[data-state='hidden_out_of_scope'] {
+.stateChip[data-state='excluded'] {
   background: var(--status-placeholder-bg);
   color: var(--status-placeholder);
 }

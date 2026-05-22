@@ -25,20 +25,20 @@ import { useProject, useProjects, useUpdateProject, useArchiveProject, useHidePr
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
 import { formatDateTime, projectTypeLabel } from '@/lib/format';
-import type { ConfidenceId, ProjectStateId, ProjectStatusId, ProjectTypeId } from '@/lib/types';
+import type { ConfidenceId, HealthId, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
 import { TaskDetail } from './TaskDetail';
 import styles from './ProjectDetail.module.css';
 
-const STATUSES: ProjectStatusId[] = ['green', 'amber', 'red', 'placeholder'];
-const TYPES: ProjectTypeId[] = ['project', 'programme', 'annual_cycle'];
+const STATUSES: HealthId[] = ['green', 'amber', 'red', 'placeholder'];
+const TYPES: ProjectTypeId[] = ['project', 'programme', 'operational'];
 const CONFIDENCES: ConfidenceId[] = ['high', 'medium', 'low'];
-const STATES: ProjectStateId[] = ['active', 'archived', 'hidden_out_of_scope'];
+const STATES: ProjectStatusId[] = ['active', 'archived', 'excluded'];
 
-const STATE_LABEL: Record<ProjectStateId, string> = {
+const STATE_LABEL: Record<ProjectStatusId, string> = {
   active: 'Active',
-  archived: 'Archived (closed)',
-  hidden_out_of_scope: 'Hidden / out of scope',
+  archived: 'Closed',
+  excluded: 'Excluded',
 };
 
 export function ProjectDetail() {
@@ -58,7 +58,7 @@ export function ProjectDetail() {
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
-  const [stateAction, setStateAction] = useState<{ next: ProjectStateId; label: string } | null>(null);
+  const [stateAction, setStateAction] = useState<{ next: ProjectStatusId; label: string } | null>(null);
   const [stateReason, setStateReason] = useState('');
 
   if (isLoading) return <div className={styles.placeholder}>Loading project…</div>;
@@ -71,12 +71,12 @@ export function ProjectDetail() {
       name: project.name,
       project_type: project.project_type,
       owner: project.owner ?? '',
-      status: project.status,
-      status_confidence: project.status_confidence ?? '',
+      health: project.health,
+      health_confidence: project.health_confidence ?? '',
       owner_confidence: project.owner_confidence ?? '',
       next_decision: project.next_decision ?? '',
       deadline: project.deadline ?? '',
-      canonical_location: project.canonical_location ?? '',
+      primary_location: project.primary_location ?? '',
       logseq_page: project.logseq_page ?? '',
       parent_id: project.parent_id ?? '',
     });
@@ -89,16 +89,16 @@ export function ProjectDetail() {
     if (draft.name !== project.name) payload.name = draft.name;
     if (draft.project_type !== project.project_type) payload.project_type = draft.project_type;
     if (draft.owner !== (project.owner ?? '')) payload.owner = draft.owner || null;
-    if (draft.status !== project.status) payload.status = draft.status;
-    if (draft.status_confidence !== (project.status_confidence ?? ''))
-      payload.status_confidence = draft.status_confidence || null;
+    if (draft.health !== project.health) payload.health = draft.health;
+    if (draft.health_confidence !== (project.health_confidence ?? ''))
+      payload.health_confidence = draft.health_confidence || null;
     if (draft.owner_confidence !== (project.owner_confidence ?? ''))
       payload.owner_confidence = draft.owner_confidence || null;
     if (draft.next_decision !== (project.next_decision ?? ''))
       payload.next_decision = draft.next_decision || null;
     if (draft.deadline !== (project.deadline ?? '')) payload.deadline = draft.deadline || null;
-    if (draft.canonical_location !== (project.canonical_location ?? ''))
-      payload.canonical_location = draft.canonical_location || null;
+    if (draft.primary_location !== (project.primary_location ?? ''))
+      payload.primary_location = draft.primary_location || null;
     if (draft.logseq_page !== (project.logseq_page ?? ''))
       payload.logseq_page = draft.logseq_page || null;
     if (draft.parent_id !== (project.parent_id ?? ''))
@@ -122,7 +122,7 @@ export function ProjectDetail() {
     try {
       if (stateAction.next === 'archived') {
         await archiveMut.mutateAsync(reason);
-      } else if (stateAction.next === 'hidden_out_of_scope') {
+      } else if (stateAction.next === 'excluded') {
         await hideMut.mutateAsync(reason);
       } else if (stateAction.next === 'active') {
         await restoreMut.mutateAsync(reason);
@@ -146,8 +146,8 @@ export function ProjectDetail() {
                 Edit
               </button>
             )}
-            <div className={styles.stateChip} data-state={project.state}>
-              {STATE_LABEL[project.state]}
+            <div className={styles.stateChip} data-state={project.status}>
+              {STATE_LABEL[project.status]}
             </div>
           </div>
         </div>
@@ -169,12 +169,12 @@ export function ProjectDetail() {
           <div className={styles.grid}>
             <Field label="Type" value={projectTypeLabel(project.project_type)} />
             <Field
-              label="Status"
+              label="Health"
               value={
                 <span className={styles.fieldRow}>
-                  <StatusPill status={project.status} inferred={project.status_inferred} />
-                  {project.status_confidence && (
-                    <ConfidenceBadge confidence={project.status_confidence} />
+                  <StatusPill status={project.health} inferred={project.health_inferred} />
+                  {project.health_confidence && (
+                    <ConfidenceBadge confidence={project.health_confidence} />
                   )}
                 </span>
               }
@@ -198,10 +198,10 @@ export function ProjectDetail() {
             <Field label="Next decision" value={project.next_decision ?? <Muted />} wide />
             <Field label="Deadline" value={project.deadline ?? <Muted />} />
             <Field
-              label="Canonical location"
+              label="Where it lives"
               value={
-                project.canonical_location ? (
-                  <code className={styles.code}>{project.canonical_location}</code>
+                project.primary_location ? (
+                  <code className={styles.code}>{project.primary_location}</code>
                 ) : (
                   <Muted />
                 )
@@ -209,7 +209,7 @@ export function ProjectDetail() {
               wide
             />
             <Field
-              label="Logseq page"
+              label="Notes (Logseq)"
               value={
                 project.logseq_page ? (
                   <code className={styles.code}>[[{project.logseq_page}]]</code>
@@ -232,8 +232,8 @@ export function ProjectDetail() {
                 }
               />
             )}
-            {project.state_reason && (
-              <Field label="State reason" value={project.state_reason} wide />
+            {project.status_reason && (
+              <Field label="Status note" value={project.status_reason} wide />
             )}
           </div>
         ) : (
@@ -280,10 +280,10 @@ export function ProjectDetail() {
                 ))}
               </select>
             </EditField>
-            <EditField label="Status">
+            <EditField label="Health">
               <select
-                value={draft.status ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, status: e.target.value }))}
+                value={draft.health ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, health: e.target.value }))}
                 className={styles.input}
               >
                 {STATUSES.map((s) => (
@@ -293,10 +293,10 @@ export function ProjectDetail() {
                 ))}
               </select>
             </EditField>
-            <EditField label="Status confidence">
+            <EditField label="Health confidence">
               <select
-                value={draft.status_confidence ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, status_confidence: e.target.value }))}
+                value={draft.health_confidence ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, health_confidence: e.target.value }))}
                 className={styles.input}
               >
                 <option value="">—</option>
@@ -323,15 +323,15 @@ export function ProjectDetail() {
                 placeholder="free text — e.g. TBD, 2026-06-15"
               />
             </EditField>
-            <EditField label="Canonical location" wide>
+            <EditField label="Where it lives" wide>
               <input
-                value={draft.canonical_location ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, canonical_location: e.target.value }))}
+                value={draft.primary_location ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, primary_location: e.target.value }))}
                 className={styles.input}
                 placeholder="e.g. OneDrive › 01 projects › Project Name"
               />
             </EditField>
-            <EditField label="Logseq page">
+            <EditField label="Notes (Logseq)">
               <input
                 value={draft.logseq_page ?? ''}
                 onChange={(e) => setDraft((d) => ({ ...d, logseq_page: e.target.value }))}
@@ -385,10 +385,10 @@ export function ProjectDetail() {
         <span className={styles.metaLabel}>State</span>
         <select
           className={styles.input}
-          value={project.state}
+          value={project.status}
           onChange={(e) => {
-            const next = e.target.value as ProjectStateId;
-            if (next === project.state) return;
+            const next = e.target.value as ProjectStatusId;
+            if (next === project.status) return;
             setStateAction({ next, label: STATE_LABEL[next] });
             setStateReason('');
           }}
@@ -442,7 +442,7 @@ export function ProjectDetail() {
           )
         }
         confirmLabel="Apply"
-        destructive={stateAction?.next === 'hidden_out_of_scope'}
+        destructive={stateAction?.next === 'excluded'}
         onCancel={() => {
           setStateAction(null);
           setStateReason('');

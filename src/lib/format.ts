@@ -6,7 +6,7 @@
 // Conventions lifted from Kelly's focus-group repo.
 // ---------------------------------------------------------------
 
-import type { ConfidenceId, ProjectStatusId, ProjectTypeId, TaskStatusId } from './types';
+import type { ConfidenceId, HealthId, ProjectTypeId, TaskStatusId } from './types';
 
 const NZ_TIMEZONE = 'Pacific/Auckland';
 
@@ -49,22 +49,22 @@ export function sortableDateKey(iso: string | null | undefined): string {
 
 // ---- Labels -------------------------------------------------------------
 
-export function statusLabel(s: ProjectStatusId): string {
+export function statusLabel(s: HealthId): string {
   switch (s) {
     case 'green':
-      return 'Green';
+      return 'On track';
     case 'amber':
-      return 'Amber';
+      return 'At risk';
     case 'red':
-      return 'Red';
+      return 'Off track';
     case 'placeholder':
-      return 'Placeholder';
+      return 'Watching';
   }
 }
 
-/** Severity ordering for status: Red > Amber > Green > Placeholder.
+/** Severity ordering for health: Red > Amber > Green > Placeholder.
  *  Lower number = higher severity = appears first when sorting desc. */
-export function statusSeverity(s: ProjectStatusId): number {
+export function statusSeverity(s: HealthId): number {
   switch (s) {
     case 'red':
       return 1;
@@ -83,8 +83,8 @@ export function projectTypeLabel(t: ProjectTypeId): string {
       return 'Project';
     case 'programme':
       return 'Programme';
-    case 'annual_cycle':
-      return 'Annual cycle';
+    case 'operational':
+      return 'Operational';
   }
 }
 
@@ -112,16 +112,26 @@ export function humaniseFieldName(field: string): string {
   switch (field) {
     case 'next_decision':
       return 'Next decision';
-    case 'canonical_location':
-      return 'Canonical location';
+    case 'primary_location':
+      return 'Where it lives';
+    case 'canonical_location': // Keep for backwards compat with old history
+      return 'Where it lives';
     case 'logseq_page':
-      return 'Logseq page';
+      return 'Notes (Logseq)';
     case 'parent_id':
       return 'Parent programme';
     case 'project_type':
       return 'Project type';
-    case 'status_inferred':
-      return 'Status inference';
+    case 'health_inferred':
+      return 'Health inference';
+    case 'health':
+      return 'Health';
+    case 'status':
+      return 'Status';
+    case 'status_reason':
+      return 'Status note';
+    case 'status_inferred': // Keep for backwards compat with old history
+      return 'Health inference';
     case 'owner_inferred':
       return 'Owner inference';
     case 'due_date':

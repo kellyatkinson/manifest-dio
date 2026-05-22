@@ -1,18 +1,18 @@
 import type { MouseEvent } from 'react';
 
-import type { ProjectStatusId } from '@/lib/types';
+import type { HealthId } from '@/lib/types';
 import { statusLabel } from '@/lib/format';
 
 import styles from './StatusPill.module.css';
 
 interface Props {
-  status: ProjectStatusId;
+  status: HealthId;
   inferred?: boolean;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   title?: string;
 }
 
-const colourClass: Record<ProjectStatusId, string> = {
+const colourClass: Record<HealthId, string> = {
   green: styles.green,
   amber: styles.amber,
   red: styles.red,

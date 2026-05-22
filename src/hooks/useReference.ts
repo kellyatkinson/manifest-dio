@@ -20,11 +20,11 @@ export function useProjectTypes() {
 }
 
 export function useProjectStatuses() {
-  return useQuery({ queryKey: ['ref', 'project_statuses'], queryFn: listProjectStatuses, ...REF_OPTS });
+  return useQuery({ queryKey: ['ref', 'health_levels'], queryFn: listProjectStatuses, ...REF_OPTS });
 }
 
 export function useProjectStates() {
-  return useQuery({ queryKey: ['ref', 'project_states'], queryFn: listProjectStates, ...REF_OPTS });
+  return useQuery({ queryKey: ['ref', 'project_statuses'], queryFn: listProjectStates, ...REF_OPTS });
 }
 
 export function useConfidenceLevels() {

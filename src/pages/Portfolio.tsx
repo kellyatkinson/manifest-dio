@@ -16,7 +16,7 @@ import { ProjectTable } from '@/components/ProjectTable';
 import { ProgrammeCard } from '@/components/ProgrammeCard';
 import { ProjectCard } from '@/components/ProjectCard';
 import { useProjects } from '@/hooks/useProjects';
-import type { ProjectStateId } from '@/lib/types';
+import type { ProjectStatusId } from '@/lib/types';
 import { statusLabel } from '@/lib/format';
 
 import styles from './Portfolio.module.css';
@@ -43,7 +43,7 @@ export function Portfolio({ mode }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('board');
   const [showCreate, setShowCreate] = useState(false);
 
-  const queryState: ProjectStateId | 'all' =
+  const queryState: ProjectStatusId | 'all' =
     mode === 'archived' ? 'archived' : filters.state ?? 'active';
 
   const { data: projects = [], isLoading, error } = useProjects(queryState);
@@ -59,11 +59,11 @@ export function Portfolio({ mode }: Props) {
   const filtered = useMemo(() => {
     const term = filters.search.trim().toLowerCase();
     return projects.filter((p) => {
-      if (filters.status && p.status !== filters.status) return false;
+      if (filters.status && p.health !== filters.status) return false;
       if (filters.type && p.project_type !== filters.type) return false;
       if (filters.owner && (p.owner ?? '') !== filters.owner) return false;
       if (term) {
-        const haystack = [p.name, p.next_decision ?? '', p.owner ?? '', p.deadline ?? '', p.canonical_location ?? '']
+        const haystack = [p.name, p.next_decision ?? '', p.owner ?? '', p.deadline ?? '', p.primary_location ?? '']
           .join(' ')
           .toLowerCase();
         if (!haystack.includes(term)) return false;
@@ -76,9 +76,9 @@ export function Portfolio({ mode }: Props) {
     const total = projects.length;
     const programmes = projects.filter((p) => p.project_type === 'programme').length;
     const projectCount = projects.filter((p) => p.project_type === 'project').length;
-    const annual = projects.filter((p) => p.project_type === 'annual_cycle').length;
+    const annual = projects.filter((p) => p.project_type === 'operational').length;
     const byStatus: Record<string, number> = { red: 0, amber: 0, green: 0, placeholder: 0 };
-    for (const p of projects) byStatus[p.status]++;
+    for (const p of projects) byStatus[p.health]++;
     return { total, programmes, projectCount, annual, byStatus };
   }, [projects]);
 
@@ -99,7 +99,7 @@ export function Portfolio({ mode }: Props) {
   const childIds = new Set(filtered.filter((p) => p.parent_id).map((p) => p.id));
   const programmes = filtered.filter((p) => p.project_type === 'programme');
   const projectItems = filtered.filter((p) => p.project_type === 'project' && !childIds.has(p.id));
-  const annualCycles = filtered.filter((p) => p.project_type === 'annual_cycle');
+  const annualCycles = filtered.filter((p) => p.project_type === 'operational');
 
   return (
     <div>

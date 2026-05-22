@@ -11,22 +11,22 @@ import {
   adminHideProject,
   adminRestoreProject,
   adminSetOwner,
-  adminSetStatus,
+  adminSetHealth,
   adminUpdateProject,
   getProject,
   listProjects,
   type CreateProjectInput,
   type UpdateProjectInput,
 } from '@/lib/api';
-import type { ConfidenceId, ProjectStateId, ProjectStatusId } from '@/lib/types';
+import type { ConfidenceId, HealthId, ProjectStatusId } from '@/lib/types';
 
 const PROJECTS_KEY = ['projects'] as const;
 const PROJECT_KEY = (id: string) => ['project', id] as const;
 
-export function useProjects(state: ProjectStateId | 'all' = 'active') {
+export function useProjects(status: ProjectStatusId | 'all' = 'active') {
   return useQuery({
-    queryKey: [...PROJECTS_KEY, state],
-    queryFn: () => listProjects(state),
+    queryKey: [...PROJECTS_KEY, status],
+    queryFn: () => listProjects(status),
     staleTime: 30 * 1000,
   });
 }
@@ -64,11 +64,11 @@ export function useUpdateProject(projectId: string) {
   });
 }
 
-export function useSetStatus(projectId: string) {
+export function useSetHealth(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (vars: { status: ProjectStatusId; confidence?: ConfidenceId; note?: string }) =>
-      adminSetStatus(projectId, vars.status, vars.confidence, vars.note),
+    mutationFn: (vars: { health: HealthId; confidence?: ConfidenceId; note?: string }) =>
+      adminSetHealth(projectId, vars.health, vars.confidence, vars.note),
     onSuccess: () => invalidateAllProjects(qc, projectId),
   });
 }
@@ -85,7 +85,7 @@ export function useSetOwner(projectId: string) {
 export function useConfirmInference(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (field: 'status' | 'owner') => adminConfirmInference(projectId, field),
+    mutationFn: (field: 'health' | 'owner') => adminConfirmInference(projectId, field),
     onSuccess: () => invalidateAllProjects(qc, projectId),
   });
 }

@@ -1,13 +1,13 @@
-import type { ProjectStateId, ProjectStatusId, ProjectTypeId } from '@/lib/types';
+import type { HealthId, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
 import styles from './ProjectFilters.module.css';
 
 export interface FilterState {
   search: string;
-  status: ProjectStatusId | '';
+  status: HealthId | '';
   type: ProjectTypeId | '';
   owner: string;
-  state?: ProjectStateId | 'all';
+  state?: ProjectStatusId | 'all';
 }
 
 interface Props {
@@ -42,17 +42,17 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
       </div>
 
       <div className={styles.group}>
-        <span className={styles.label}>Status</span>
+        <span className={styles.label}>Health</span>
         <select
           className={styles.select}
           value={value.status}
-          onChange={(e) => set('status', e.target.value as ProjectStatusId | '')}
+          onChange={(e) => set('status', e.target.value as HealthId | '')}
         >
           <option value="">All</option>
-          <option value="red">Red</option>
-          <option value="amber">Amber</option>
-          <option value="green">Green</option>
-          <option value="placeholder">Placeholder</option>
+          <option value="red">Off track</option>
+          <option value="amber">At risk</option>
+          <option value="green">On track</option>
+          <option value="placeholder">Watching</option>
         </select>
       </div>
 
@@ -88,11 +88,11 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
           <select
             className={styles.select}
             value={value.state ?? 'active'}
-            onChange={(e) => set('state', e.target.value as ProjectStateId | 'all')}
+            onChange={(e) => set('state', e.target.value as ProjectStatusId | 'all')}
           >
             <option value="active">Active</option>
-            <option value="archived">Archived</option>
-            <option value="hidden_out_of_scope">Hidden / out of scope</option>
+            <option value="archived">Closed</option>
+            <option value="excluded">Excluded</option>
             <option value="all">All</option>
           </select>
         </div>

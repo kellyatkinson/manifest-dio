@@ -40,7 +40,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
   { key: 'name', label: 'Name' },
   { key: 'project_type', label: 'Type' },
   { key: 'owner', label: 'Owner' },
-  { key: 'status', label: 'Status' },
+  { key: 'status', label: 'Health' },
   { key: 'next_decision', label: 'Next decision' },
   { key: 'deadline', label: 'Deadline' },
   { key: 'updated_at', label: 'Updated' },
@@ -51,7 +51,7 @@ export function ProjectTable({ projects }: Props) {
   const [sort, setSort] = useState<SortState>({ key: 'display_order', dir: 'asc' });
   const [popover, setPopover] = useState<{
     project: Project;
-    field: 'status' | 'owner';
+    field: 'health' | 'owner';
     anchor: { x: number; y: number };
   } | null>(null);
 
@@ -103,7 +103,7 @@ export function ProjectTable({ projects }: Props) {
                     className={`${styles.typeChip} ${
                       p.project_type === 'programme'
                         ? styles.typeProgramme
-                        : p.project_type === 'annual_cycle'
+                        : p.project_type === 'operational'
                           ? styles.typeAnnual
                           : ''
                     }`}
@@ -131,15 +131,15 @@ export function ProjectTable({ projects }: Props) {
                 </td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <StatusPill
-                    status={p.status}
-                    inferred={p.status_inferred}
+                    status={p.health}
+                    inferred={p.health_inferred}
                     onClick={
-                      p.status_inferred
+                      p.health_inferred
                         ? (event) => {
                             const rect = event.currentTarget.getBoundingClientRect();
                             setPopover({
                               project: p,
-                              field: 'status',
+                              field: 'health',
                               anchor: { x: rect.left, y: rect.bottom },
                             });
                           }
@@ -182,7 +182,7 @@ function cmp(a: Project, b: Project, key: SortKey): number {
       return (a.owner ?? '').localeCompare(b.owner ?? '', 'en-NZ');
     case 'status':
       // Severity-based: Red > Amber > Green > Placeholder.
-      return statusSeverity(a.status) - statusSeverity(b.status);
+      return statusSeverity(a.health) - statusSeverity(b.health);
     case 'next_decision':
       return (a.next_decision ?? '').localeCompare(b.next_decision ?? '', 'en-NZ');
     case 'deadline':

@@ -27,7 +27,7 @@ export function ProgrammeCard({ project, children = [] }: Props) {
       >
         <div className={styles.header}>
           <span className={styles.typeBadge}>Programme</span>
-          <StatusPill status={project.status} inferred={project.status_inferred} />
+          <StatusPill status={project.health} inferred={project.health_inferred} />
         </div>
 
         <h2 className={styles.title}>{project.name}</h2>
@@ -73,7 +73,7 @@ export function ProgrammeCard({ project, children = [] }: Props) {
                 onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${child.id}`)}
               >
                 <div className={styles.childTop}>
-                  <StatusPill status={child.status} inferred={child.status_inferred} />
+                  <StatusPill status={child.health} inferred={child.health_inferred} />
                 </div>
                 <div className={styles.childName}>{child.name}</div>
                 <div className={styles.childMeta}>

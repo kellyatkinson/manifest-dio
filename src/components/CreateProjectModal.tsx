@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 
 import { useCreateProject } from '@/hooks/useProjects';
-import type { Project, ProjectTypeId, ProjectStatusId } from '@/lib/types';
+import type { Project, ProjectTypeId, HealthId } from '@/lib/types';
 
 import styles from './CreateProjectModal.module.css';
 
@@ -15,11 +15,11 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
 
   const [name, setName] = useState('');
   const [type, setType] = useState<ProjectTypeId>('project');
-  const [status, setStatus] = useState<ProjectStatusId>('placeholder');
+  const [health, setHealth] = useState<HealthId>('placeholder');
   const [owner, setOwner] = useState('');
   const [deadline, setDeadline] = useState('');
   const [nextDecision, setNextDecision] = useState('');
-  const [canonicalLocation, setCanonicalLocation] = useState('');
+  const [primaryLocation, setPrimaryLocation] = useState('');
   const [logseqPage, setLogseqPage] = useState('');
   const [parentId, setParentId] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -32,11 +32,11 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
       await createMut.mutateAsync({
         name: name.trim(),
         project_type: type,
-        status,
+        health,
         owner: owner.trim() || undefined,
         deadline: deadline.trim() || undefined,
         next_decision: nextDecision.trim() || undefined,
-        canonical_location: canonicalLocation.trim() || undefined,
+        primary_location: primaryLocation.trim() || undefined,
         logseq_page: logseqPage.trim() || undefined,
         parent_id: parentId || null,
       });
@@ -89,17 +89,17 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
             </div>
 
             <div className={styles.row}>
-              <label className={styles.label} htmlFor="cp-status">Status</label>
+              <label className={styles.label} htmlFor="cp-health">Health</label>
               <select
-                id="cp-status"
+                id="cp-health"
                 className={styles.input}
-                value={status}
-                onChange={(e) => setStatus(e.target.value as ProjectStatusId)}
+                value={health}
+                onChange={(e) => setHealth(e.target.value as HealthId)}
               >
-                <option value="placeholder">Placeholder</option>
-                <option value="green">Green</option>
-                <option value="amber">Amber</option>
-                <option value="red">Red</option>
+                <option value="placeholder">Watching</option>
+                <option value="green">On track</option>
+                <option value="amber">At risk</option>
+                <option value="red">Off track</option>
               </select>
             </div>
           </div>
@@ -159,17 +159,17 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
 
           <div className={styles.cols2}>
             <div className={styles.row}>
-              <label className={styles.label} htmlFor="cp-location">Canonical location</label>
+              <label className={styles.label} htmlFor="cp-location">Where it lives</label>
               <input
                 id="cp-location"
                 className={styles.input}
-                value={canonicalLocation}
-                onChange={(e) => setCanonicalLocation(e.target.value)}
+                value={primaryLocation}
+                onChange={(e) => setPrimaryLocation(e.target.value)}
                 placeholder="e.g. OneDrive › 01 projects › …"
               />
             </div>
             <div className={styles.row}>
-              <label className={styles.label} htmlFor="cp-logseq">Logseq page</label>
+              <label className={styles.label} htmlFor="cp-logseq">Notes (Logseq)</label>
               <input
                 id="cp-logseq"
                 className={styles.input}
