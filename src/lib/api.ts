@@ -348,6 +348,82 @@ export async function adminGetTaskHistory(taskId?: string | null): Promise<TaskH
   return (data ?? []) as TaskHistoryRow[];
 }
 
+// =========================================================================
+// Activity log
+// =========================================================================
+
+import type { ActivityEntry } from '@/lib/types';
+
+const ACTIVITY_SELECT =
+  '*, links:activity_links(id,activity_id,url,label,kind,display_order,created_at), project:projects(id,name,parent_id)';
+
+/** Most recent activity across the portfolio. */
+export async function listRecentActivity(limit = 20): Promise<ActivityEntry[]> {
+  const { data, error } = await supabase
+    .from('activity_log')
+    .select(ACTIVITY_SELECT)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`listRecentActivity: ${error.message}`);
+  return (data ?? []) as ActivityEntry[];
+}
+
+/** Activity for a single project, newest first. */
+export async function listActivityForProject(
+  projectId: string,
+  limit = 50,
+): Promise<ActivityEntry[]> {
+  const { data, error } = await supabase
+    .from('activity_log')
+    .select(ACTIVITY_SELECT)
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`listActivityForProject: ${error.message}`);
+  return (data ?? []) as ActivityEntry[];
+}
+
+/**
+ * Activity touching any project in a list — used to roll up a programme's
+ * activity from its own + its children.
+ */
+export async function listActivityForProjects(
+  projectIds: string[],
+  limit = 50,
+): Promise<ActivityEntry[]> {
+  if (projectIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from('activity_log')
+    .select(ACTIVITY_SELECT)
+    .in('project_id', projectIds)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`listActivityForProjects: ${error.message}`);
+  return (data ?? []) as ActivityEntry[];
+}
+
+export interface LogActivityInput {
+  project_id: string | null;
+  content: string;
+  kind?: string | null;
+  links?: { url: string; label?: string | null; kind?: string | null }[];
+}
+
+export function adminLogActivity(input: LogActivityInput) {
+  return callRpc<{ id: string }>('admin_log_activity', {
+    p_project_id: input.project_id,
+    p_content: input.content,
+    p_kind: input.kind ?? null,
+    p_links: input.links ?? [],
+  });
+}
+
+export function adminDeleteActivity(activityId: string) {
+  return callRpc<Record<string, unknown>>('admin_delete_activity', {
+    p_activity_id: activityId,
+  });
+}
+
 // ---- Admin check ----
 
 export async function isAdmin(email: string | null | undefined): Promise<boolean> {

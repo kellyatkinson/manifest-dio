@@ -13,11 +13,14 @@
 import { useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { ActivityFeed } from '@/components/ActivityFeed';
 import { HistoryFeed } from '@/components/HistoryFeed';
 import { ProjectCard } from '@/components/ProjectCard';
+import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { useProject, useProjects } from '@/hooks/useProjects';
+import { useProjectsActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { formatDateTime, statusLabel } from '@/lib/format';
 import type { HealthId } from '@/lib/types';
@@ -44,6 +47,13 @@ export function ProgrammeDetail() {
     () => allProjects.filter((p) => p.parent_id === programmeId),
     [allProjects, programmeId],
   );
+
+  // Roll-up activity = programme's own + all children's
+  const activityProjectIds = useMemo(
+    () => (programmeId ? [programmeId, ...children.map((c) => c.id)] : []),
+    [programmeId, children],
+  );
+  const { data: activity = [] } = useProjectsActivity(activityProjectIds, 30);
 
   const healthMix = useMemo(() => {
     const counts: Record<HealthId, number> = { red: 0, amber: 0, green: 0, placeholder: 0 };
@@ -191,6 +201,29 @@ export function ProgrammeDetail() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* ---- Activity (programme + children rolled up) ---- */}
+      <section className={styles.activityWrap}>
+        <header className={styles.activityHead}>
+          <h2 className={styles.activityTitle}>Activity</h2>
+          <span className={styles.activityCount}>{activity.length}</span>
+        </header>
+        <div className={styles.activityCard}>
+          <div className={styles.quickLogWrap}>
+            <QuickLog
+              projectId={programme.id}
+              placeholder="Log a programme-level discussion or decision…"
+              contextHint={programme.name}
+            />
+          </div>
+          <ActivityFeed
+            entries={activity}
+            limit={15}
+            showProject
+            emptyMessage="Nothing logged across this programme yet."
+          />
+        </div>
       </section>
 
       {/* ---- Programme history ---- */}

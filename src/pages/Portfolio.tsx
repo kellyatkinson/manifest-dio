@@ -1,17 +1,13 @@
 // ---------------------------------------------------------------
-// Portfolio page — board + table view
-// ---------------------------------------------------------------
-// Board view (default): Programmes (large cards) → Projects (grid)
-//   → Operational (compact rows).
-// Table view: the original sortable table.
-// Mode prop controls whether we show active or archived rows.
+// Portfolio — detail views shell (Board / Map / Table).
 //
-// Filter state is mirrored to URL search params so a reload (or a
-// shared link) preserves the view.
+// The dashboard lives at /portfolio. This page renders the detailed
+// project views at /portfolio/board, /portfolio/map, /portfolio/table
+// (and /closed for archived). Filters sync to URL search params.
 // ---------------------------------------------------------------
 
 import { useMemo, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { PortfolioMap } from '@/components/PortfolioMap';
@@ -19,10 +15,7 @@ import { ProjectFilters, type FilterState } from '@/components/ProjectFilters';
 import { ProjectTable } from '@/components/ProjectTable';
 import { ProgrammeCard } from '@/components/ProgrammeCard';
 import { ProjectCard } from '@/components/ProjectCard';
-import { PulsePanel } from '@/components/PulsePanel';
-import { WeekRail } from '@/components/WeekRail';
 import { useProjects } from '@/hooks/useProjects';
-import { useAllTasks } from '@/hooks/useTasks';
 import type {
   HealthId,
   Project,
@@ -32,22 +25,22 @@ import type {
 
 import styles from './Portfolio.module.css';
 
+type ViewMode = 'board' | 'table' | 'map';
+
 interface Props {
   mode: 'active' | 'archived';
+  view: ViewMode;
 }
-
-type ViewMode = 'board' | 'table' | 'map';
 
 const VALID_HEALTH: ReadonlySet<HealthId> = new Set(['green', 'amber', 'red', 'placeholder']);
 const VALID_TYPE: ReadonlySet<ProjectTypeId> = new Set(['project', 'programme', 'operational']);
 const VALID_STATUS: ReadonlySet<ProjectStatusId> = new Set(['active', 'archived', 'excluded']);
 
-export function Portfolio({ mode }: Props) {
+export function Portfolio({ mode, view }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<ViewMode>('board');
   const [showCreate, setShowCreate] = useState(false);
+  const navigate = useNavigate();
 
-  // Derive FilterState from URL — keeps filters shareable and reload-safe.
   const filters = useMemo<FilterState>(() => {
     const healthParam = searchParams.get('health') ?? '';
     const typeParam = searchParams.get('type') ?? '';
@@ -61,7 +54,6 @@ export function Portfolio({ mode }: Props) {
           : VALID_STATUS.has(statusParam as ProjectStatusId)
             ? (statusParam as ProjectStatusId)
             : defaultStatus;
-
     return {
       search: searchParams.get('q') ?? '',
       status: VALID_HEALTH.has(healthParam as HealthId) ? (healthParam as HealthId) : '',
@@ -94,7 +86,6 @@ export function Portfolio({ mode }: Props) {
     mode === 'archived' ? 'archived' : filters.state ?? 'active';
 
   const { data: projects = [], isLoading, error } = useProjects(queryState);
-  const { data: tasks = [] } = useAllTasks(false);
 
   const ownerOptions = useMemo(() => {
     const set = new Set<string>();
@@ -140,7 +131,6 @@ export function Portfolio({ mode }: Props) {
     return map;
   }, [filtered]);
 
-  // Split board sections — child projects are shown inside their programme, not in the grid
   const childIds = new Set(filtered.filter((p) => p.parent_id).map((p) => p.id));
   const programmes = filtered.filter((p) => p.project_type === 'programme');
   const projectItems = filtered.filter((p) => p.project_type === 'project' && !childIds.has(p.id));
@@ -152,38 +142,40 @@ export function Portfolio({ mode }: Props) {
       <header className={styles.head}>
         <div className={styles.headRow}>
           <div>
+            <Link to="/portfolio" className={styles.backLink}>
+              ← Portfolio
+            </Link>
             <h1 className={styles.title}>
-              {mode === 'archived' ? 'Recently closed' : 'Portfolio'}
+              {mode === 'archived' ? 'Recently closed' : 'Detail views'}
             </h1>
             <p className={styles.sub}>
               {mode === 'archived'
                 ? 'Projects we finished. Restore one if you need to.'
-                : "Everything in flight, and what's next."}
+                : 'Full project list — board, map, or table.'}
             </p>
           </div>
 
           {mode === 'active' && (
             <div className={styles.headActions}>
-              {/* Board / Table toggle */}
               <div className={styles.viewToggle} role="group" aria-label="View mode">
                 <button
                   type="button"
-                  className={`${styles.toggleBtn} ${viewMode === 'board' ? styles.toggleActive : ''}`}
-                  onClick={() => setViewMode('board')}
+                  className={`${styles.toggleBtn} ${view === 'board' ? styles.toggleActive : ''}`}
+                  onClick={() => navigate(`/portfolio/board?${searchParams.toString()}`)}
                 >
                   Board
                 </button>
                 <button
                   type="button"
-                  className={`${styles.toggleBtn} ${viewMode === 'map' ? styles.toggleActive : ''}`}
-                  onClick={() => setViewMode('map')}
+                  className={`${styles.toggleBtn} ${view === 'map' ? styles.toggleActive : ''}`}
+                  onClick={() => navigate(`/portfolio/map?${searchParams.toString()}`)}
                 >
                   Map
                 </button>
                 <button
                   type="button"
-                  className={`${styles.toggleBtn} ${viewMode === 'table' ? styles.toggleActive : ''}`}
-                  onClick={() => setViewMode('table')}
+                  className={`${styles.toggleBtn} ${view === 'table' ? styles.toggleActive : ''}`}
+                  onClick={() => navigate(`/portfolio/table?${searchParams.toString()}`)}
                 >
                   Table
                 </button>
@@ -200,15 +192,6 @@ export function Portfolio({ mode }: Props) {
         </div>
       </header>
 
-      {/* Pulse summary panel (replaces 3 flat tiles) */}
-      {mode === 'active' && <PulsePanel projects={projects} />}
-
-      {/* This week — due within 7 days */}
-      {mode === 'active' && viewMode === 'board' && (
-        <WeekRail projects={projects} tasks={tasks} />
-      )}
-
-      {/* Filters */}
       <ProjectFilters
         value={filters}
         onChange={setFilters}
@@ -216,7 +199,6 @@ export function Portfolio({ mode }: Props) {
         showStateFilter={mode === 'active'}
       />
 
-      {/* Loading / error states */}
       {isLoading && <div className={styles.note}>Loading…</div>}
       {error && (
         <div className={styles.error}>
@@ -224,11 +206,10 @@ export function Portfolio({ mode }: Props) {
         </div>
       )}
 
-      {/* Content */}
       {!isLoading && !error && (
-        viewMode === 'table' || mode === 'archived' ? (
+        view === 'table' || mode === 'archived' ? (
           <ProjectTable projects={filtered} />
-        ) : viewMode === 'map' ? (
+        ) : view === 'map' ? (
           <PortfolioMap projects={filtered} />
         ) : (
           <div className={styles.board}>
@@ -236,7 +217,6 @@ export function Portfolio({ mode }: Props) {
               <div className={styles.empty}>Nothing matches. Try clearing the search?</div>
             )}
 
-            {/* Programmes */}
             {programmes.length > 0 && (
               <section className={styles.section}>
                 <div className={styles.sectionHead}>
@@ -258,7 +238,6 @@ export function Portfolio({ mode }: Props) {
               </section>
             )}
 
-            {/* Projects */}
             {projectItems.length > 0 && (
               <section className={styles.section}>
                 <div className={styles.sectionHead}>
@@ -276,7 +255,6 @@ export function Portfolio({ mode }: Props) {
               </section>
             )}
 
-            {/* Operational */}
             {operationalItems.length > 0 && (
               <section className={styles.section}>
                 <div className={styles.sectionHead}>

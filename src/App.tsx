@@ -23,6 +23,7 @@ import {
 
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { Dashboard } from './pages/Dashboard';
 import { Decisions } from './pages/Decisions';
 import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
@@ -57,14 +58,17 @@ export function App() {
             }
           >
             <Route index element={<Navigate to="/portfolio" replace />} />
-            <Route path="/portfolio" element={<Portfolio mode="active" />} />
+            <Route path="/portfolio" element={<Dashboard />} />
+            <Route path="/portfolio/board" element={<Portfolio mode="active" view="board" />} />
+            <Route path="/portfolio/map" element={<Portfolio mode="active" view="map" />} />
+            <Route path="/portfolio/table" element={<Portfolio mode="active" view="table" />} />
             <Route path="/portfolio/:projectId" element={<ProjectDetail />} />
             <Route path="/portfolio/:projectId/tasks/:taskId" element={<ProjectDetail />} />
             <Route path="/programmes" element={<Programmes />} />
             <Route path="/programmes/:programmeId" element={<ProgrammeDetail />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/tasks" element={<Tasks />} />
-            <Route path="/closed" element={<Portfolio mode="archived" />} />
+            <Route path="/closed" element={<Portfolio mode="archived" view="table" />} />
             <Route path="/decisions" element={<Decisions />} />
           </Route>
 

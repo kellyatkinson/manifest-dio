@@ -1,0 +1,119 @@
+/* ---------------------------------------------------------------
+   QuickLog — input form for self-logging activity.
+   --------------------------------------------------------------- */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-sans);
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--dio-navy);
+  min-width: 0;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--dio-blue-light);
+  box-shadow: 0 0 0 3px rgba(0, 73, 144, 0.08);
+}
+
+.linkBtn,
+.submitBtn,
+.removeBtn {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--dio-grey);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s ease;
+}
+
+.linkBtn:hover {
+  background: var(--dio-cream);
+}
+
+.submitBtn {
+  background: var(--dio-navy);
+  color: #ffffff;
+  border-color: var(--dio-navy);
+  font-weight: 500;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--dio-navy-deep);
+  border-color: var(--dio-navy-deep);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.removeBtn {
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--dio-grey-soft);
+}
+
+.removeBtn:hover {
+  color: var(--dio-red);
+  background: var(--dio-cream);
+}
+
+.contextHint {
+  font-size: 11px;
+  color: var(--dio-grey-soft);
+  font-style: italic;
+}
+
+.linkBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--dio-cream-soft);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.linkHint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--dio-grey-soft);
+  font-style: italic;
+}
+
+.linkRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.error {
+  font-size: 12px;
+  color: var(--status-red);
+  background: var(--status-red-bg);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}

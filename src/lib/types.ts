@@ -153,6 +153,41 @@ export interface RpcErr {
 
 export type RpcResult<T = Record<string, unknown>> = RpcOk<T> | RpcErr;
 
+// ---- Activity log -------------------------------------------------------
+
+export type ActivityKind = 'note' | 'meeting' | 'action' | 'decision' | string;
+
+export type ActivityLinkKind =
+  | 'zendesk_ticket'
+  | 'zendesk_kb'
+  | 'logseq'
+  | 'onedrive'
+  | 'external'
+  | string;
+
+export interface ActivityLink {
+  id: string;
+  activity_id: string;
+  url: string;
+  label: string | null;
+  kind: ActivityLinkKind | null;
+  display_order: number;
+  created_at: string;
+}
+
+export interface ActivityEntry {
+  id: string;
+  project_id: string | null;
+  content: string;
+  kind: ActivityKind | null;
+  created_at: string;
+  created_by_email: string | null;
+  /** Populated when reads request the embedded relation. */
+  links?: ActivityLink[];
+  /** Joined from projects when the read includes it. */
+  project?: { id: string; name: string; parent_id: string | null } | null;
+}
+
 // ---- Setting row --------------------------------------------------------
 
 export interface Setting {

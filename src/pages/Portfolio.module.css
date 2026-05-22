@@ -26,6 +26,21 @@
   font-weight: 400;
 }
 
+.backLink {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--dio-grey-soft);
+  text-decoration: none;
+  margin-bottom: 4px;
+  padding: 2px 0;
+  transition: color 0.12s ease;
+}
+
+.backLink:hover {
+  color: var(--dio-navy);
+  text-decoration: none;
+}
+
 /* ---- Header actions: toggle + create button ---- */
 
 .headActions {

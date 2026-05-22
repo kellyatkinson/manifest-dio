@@ -16,13 +16,16 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { ActivityFeed } from '@/components/ActivityFeed';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
 import { InferencePopover } from '@/components/InferencePopover';
+import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
 import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useRestoreProject } from '@/hooks/useProjects';
+import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
 import { dash, formatDateTime, humaniseFieldName, projectTypeLabel } from '@/lib/format';
@@ -49,6 +52,7 @@ export function ProjectDetail() {
   const { data: project, isLoading, error } = useProject(projectId);
   const { data: tasks = [] } = useTasksForProject(projectId);
   const { data: history = [] } = useProjectHistory(projectId);
+  const { data: activity = [] } = useProjectActivity(projectId, 30);
   const { data: allProjects = [] } = useProjects('active');
   const programmes = allProjects.filter((p) => p.project_type === 'programme' && p.id !== projectId);
 
@@ -452,6 +456,28 @@ export function ProjectDetail() {
             </div>
           </div>
         )}
+      </section>
+
+      {/* ---- Activity (self-logged) ---- */}
+      <section className={styles.activityWrap}>
+        <header className={styles.sectionHead}>
+          <h2 className={styles.sectionTitle}>Activity</h2>
+          <span className={styles.sectionCount}>{activity.length}</span>
+        </header>
+        <div className={styles.activityCard}>
+          <div className={styles.quickLogWrap}>
+            <QuickLog
+              projectId={project.id}
+              placeholder="Log a discussion, decision, or quick action on this project…"
+            />
+          </div>
+          <ActivityFeed
+            entries={activity}
+            limit={12}
+            showProject={false}
+            emptyMessage="Nothing logged on this project yet. Discussions, decisions, and quick actions land here."
+          />
+        </div>
       </section>
 
       {/* ---- Tasks ---- */}
