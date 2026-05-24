@@ -15,6 +15,40 @@
   align-items: center;
 }
 
+.selectorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectorLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dio-grey-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.select {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--dio-navy);
+  min-width: 0;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--dio-blue-light);
+  box-shadow: 0 0 0 3px rgba(0, 73, 144, 0.08);
+}
+
 .input {
   flex: 1;
   font-family: var(--font-sans);

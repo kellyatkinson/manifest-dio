@@ -3,21 +3,27 @@
 // URLs typed inline get auto-extracted on submit; an optional
 // "+ Link" button lets you attach a labelled link explicitly.
 //
-// Used on the dashboard (project_id = null = portfolio-level),
-// project detail, and programme detail surfaces.
+// Used on the Overview/dashboard (where allowProjectSelect=true so the
+// user can pick a project to tag the entry to), project detail, and
+// programme detail surfaces (where the project is fixed by context).
 // ---------------------------------------------------------------
 
-import { useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 
 import { useLogActivity } from '@/hooks/useActivity';
+import { useProjects } from '@/hooks/useProjects';
 import { classifyUrl, extractUrls } from '@/lib/linkClassify';
 
 import styles from './QuickLog.module.css';
 
 interface Props {
   projectId: string | null;
+  /** When true, render a project selector and use its value instead of
+   *  the `projectId` prop. Selector defaults to "(no project)". */
+  allowProjectSelect?: boolean;
   placeholder?: string;
-  /** Hint label shown to the right (e.g. "SIS replacement") */
+  /** Hint label shown beneath the input (e.g. "SIS replacement"). Only
+   *  used when allowProjectSelect is false. */
   contextHint?: string;
 }
 
@@ -26,13 +32,38 @@ interface LinkRow {
   label: string;
 }
 
-export function QuickLog({ projectId, placeholder, contextHint }: Props) {
+export function QuickLog({
+  projectId,
+  allowProjectSelect,
+  placeholder,
+  contextHint,
+}: Props) {
   const [content, setContent] = useState('');
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [showLinks, setShowLinks] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const log = useLogActivity();
+  // Active projects only — fetched here so the component is self-contained.
+  // React Query will dedupe with any parallel call from the host page.
+  const { data: allProjects = [] } = useProjects('active');
+
+  const { programmesGroup, projectsGroup, operationalGroup } = useMemo(() => {
+    const byName = (a: { name: string }, b: { name: string }) =>
+      a.name.localeCompare(b.name);
+    return {
+      programmesGroup: allProjects
+        .filter((p) => p.project_type === 'programme')
+        .sort(byName),
+      projectsGroup: allProjects
+        .filter((p) => p.project_type === 'project')
+        .sort(byName),
+      operationalGroup: allProjects
+        .filter((p) => p.project_type === 'operational')
+        .sort(byName),
+    };
+  }, [allProjects]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -53,15 +84,19 @@ export function QuickLog({ projectId, placeholder, contextHint }: Props) {
     for (const l of inline) byUrl.set(l.url, l);
     for (const l of manual) byUrl.set(l.url, l); // manual wins on label override
 
+    const effectiveProjectId = allowProjectSelect ? selectedProjectId : projectId;
+
     try {
       await log.mutateAsync({
-        project_id: projectId,
+        project_id: effectiveProjectId,
         content: trimmed,
         links: Array.from(byUrl.values()),
       });
       setContent('');
       setLinks([]);
       setShowLinks(false);
+      // Intentionally retain selectedProjectId so consecutive entries
+      // against the same project don't require re-picking it.
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to log activity');
     }
@@ -69,6 +104,50 @@ export function QuickLog({ projectId, placeholder, contextHint }: Props) {
 
   return (
     <form className={styles.root} onSubmit={(e) => void onSubmit(e)}>
+      {allowProjectSelect && (
+        <div className={styles.selectorRow}>
+          <label className={styles.selectorLabel} htmlFor="quicklog-project">
+            Project
+          </label>
+          <select
+            id="quicklog-project"
+            className={styles.select}
+            value={selectedProjectId ?? ''}
+            onChange={(e) => setSelectedProjectId(e.target.value || null)}
+            aria-label="Tag this entry to a project (optional)"
+          >
+            <option value="">None — portfolio-level note</option>
+            {programmesGroup.length > 0 && (
+              <optgroup label="Programmes">
+                {programmesGroup.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {projectsGroup.length > 0 && (
+              <optgroup label="Projects">
+                {projectsGroup.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {operationalGroup.length > 0 && (
+              <optgroup label="Operational">
+                {operationalGroup.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </div>
+      )}
+
       <div className={styles.row}>
         <input
           type="text"
@@ -96,7 +175,7 @@ export function QuickLog({ projectId, placeholder, contextHint }: Props) {
         </button>
       </div>
 
-      {contextHint && (
+      {contextHint && !allowProjectSelect && (
         <div className={styles.contextHint}>Will be logged against: {contextHint}</div>
       )}
 

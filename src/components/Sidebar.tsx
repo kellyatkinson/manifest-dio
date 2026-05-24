@@ -9,7 +9,7 @@ interface NavItem {
 }
 
 const PRIMARY: NavItem[] = [
-  { to: '/portfolio', label: 'Portfolio', end: false },
+  { to: '/portfolio', label: 'Overview', end: false },
   { to: '/programmes', label: 'Programmes' },
   { to: '/projects', label: 'Projects' },
   { to: '/tasks', label: 'Tasks' },

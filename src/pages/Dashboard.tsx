@@ -100,7 +100,7 @@ export function Dashboard() {
       {/* Page header */}
       <header className={styles.head}>
         <div className={styles.headIntro}>
-          <h1 className={styles.title}>Portfolio</h1>
+          <h1 className={styles.title}>Overview</h1>
           <p className={styles.sub}>Everything in flight, and what&apos;s next.</p>
         </div>
         <div className={styles.headActions}>
@@ -173,7 +173,7 @@ export function Dashboard() {
               </div>
               <div className={styles.activityCard}>
                 <div className={styles.quickLogWrap}>
-                  <QuickLog projectId={null} />
+                  <QuickLog projectId={null} allowProjectSelect />
                 </div>
                 <ActivityFeed
                   entries={recent}
