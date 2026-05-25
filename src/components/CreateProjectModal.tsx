@@ -84,7 +84,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
               >
                 <option value="programme">Programme</option>
                 <option value="project">Project</option>
-                <option value="annual_cycle">Annual cycle</option>
+                <option value="operational">Operational</option>
               </select>
             </div>
 
