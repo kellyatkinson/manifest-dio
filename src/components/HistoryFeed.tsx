@@ -7,7 +7,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { dash, formatDateTime, humaniseFieldName } from '@/lib/format';
+import { formatDateTime, humaniseFieldName, humaniseFieldValue } from '@/lib/format';
 import type { ProjectHistoryRow, TaskHistoryRow } from '@/lib/types';
 
 import styles from './HistoryFeed.module.css';
@@ -81,7 +81,10 @@ export function HistoryFeed({
                 {g.rows.map((row) => (
                   <div key={row.id} className={styles.change}>
                     Changed <span className={styles.fieldName}>{humaniseFieldName(row.field_name)}</span>{' '}
-                    <span className={styles.from}>from {dash(row.old_value)} to {dash(row.new_value)}</span>
+                    <span className={styles.from}>
+                      from {humaniseFieldValue(row.field_name, row.old_value)} to{' '}
+                      {humaniseFieldValue(row.field_name, row.new_value)}
+                    </span>
                     {isProjectRow(row) && row.was_inferred && (
                       <span className={styles.inferredTag}>was inferred</span>
                     )}

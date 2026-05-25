@@ -149,3 +149,39 @@ export function humaniseFieldName(field: string): string {
 export function dash(v: string | null | undefined): string {
   return v && v.trim() !== '' ? v : '—';
 }
+
+// ---- History field-value humanisation -----------------------------------
+// Maps enum values stored in *_history.old_value / new_value to their human
+// labels. Lifecycle status: archived → "Closed", excluded → "Excluded",
+// active → "Active". Falls back to the raw value for anything we don't
+// recognise (free-text fields, IDs, timestamps).
+
+const STATUS_VALUE_LABEL: Record<string, string> = {
+  active: 'Active',
+  archived: 'Closed',
+  excluded: 'Excluded',
+};
+
+const PROJECT_TYPE_VALUE_LABEL: Record<string, string> = {
+  project: 'Project',
+  programme: 'Programme',
+  operational: 'Operational',
+};
+
+export function humaniseFieldValue(field: string, value: string | null | undefined): string {
+  if (!value || value.trim() === '') return '—';
+  switch (field) {
+    case 'status':
+    case 'state': // backwards compat with pre-rename history rows
+      return STATUS_VALUE_LABEL[value] ?? value;
+    case 'health':
+      return statusLabel(value as HealthId);
+    case 'project_type':
+      return PROJECT_TYPE_VALUE_LABEL[value] ?? value;
+    case 'health_confidence':
+    case 'owner_confidence':
+      return confidenceLabel(value as ConfidenceId);
+    default:
+      return value;
+  }
+}

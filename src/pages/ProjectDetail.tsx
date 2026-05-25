@@ -28,7 +28,7 @@ import { useProject, useProjects, useUpdateProject, useArchiveProject, useHidePr
 import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
-import { dash, formatDateTime, humaniseFieldName, projectTypeLabel } from '@/lib/format';
+import { formatDateTime, humaniseFieldName, humaniseFieldValue, projectTypeLabel } from '@/lib/format';
 import type { ConfidenceId, HealthId, ProjectHistoryRow, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
 import { TaskDetail } from './TaskDetail';
@@ -620,7 +620,9 @@ function RecentlyRail({ history }: { history: ProjectHistoryRow[] }) {
                   {humaniseFieldName(g.rows[0].field_name)}
                 </span>
                 <span className={styles.recentlyArrow}> → </span>
-                <span className={styles.recentlyValue}>{dash(g.rows[0].new_value)}</span>
+                <span className={styles.recentlyValue}>
+                  {humaniseFieldValue(g.rows[0].field_name, g.rows[0].new_value)}
+                </span>
               </>
             ) : (
               <span className={styles.recentlyField}>
