@@ -9,6 +9,7 @@ import {
   adminConfirmInference,
   adminCreateProject,
   adminHideProject,
+  adminHoldProject,
   adminRestoreProject,
   adminSetOwner,
   adminSetHealth,
@@ -102,6 +103,14 @@ export function useHideProject(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (reason?: string) => adminHideProject(projectId, reason),
+    onSuccess: () => invalidateAllProjects(qc, projectId),
+  });
+}
+
+export function useHoldProject(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (reason?: string) => adminHoldProject(projectId, reason),
     onSuccess: () => invalidateAllProjects(qc, projectId),
   });
 }

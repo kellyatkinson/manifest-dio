@@ -29,6 +29,7 @@ import styles from './ProgrammeDetail.module.css';
 
 const STATE_LABEL: Record<string, string> = {
   active: 'Active',
+  on_hold: 'On hold',
   archived: 'Closed',
   excluded: 'Excluded',
 };

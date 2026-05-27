@@ -24,7 +24,7 @@ import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
-import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useRestoreProject } from '@/hooks/useProjects';
+import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useHoldProject, useRestoreProject } from '@/hooks/useProjects';
 import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
@@ -37,10 +37,11 @@ import styles from './ProjectDetail.module.css';
 const STATUSES: HealthId[] = ['green', 'amber', 'red', 'placeholder'];
 const TYPES: ProjectTypeId[] = ['project', 'programme', 'operational'];
 const CONFIDENCES: ConfidenceId[] = ['high', 'medium', 'low'];
-const STATES: ProjectStatusId[] = ['active', 'archived', 'excluded'];
+const STATES: ProjectStatusId[] = ['active', 'on_hold', 'archived', 'excluded'];
 
 const STATE_LABEL: Record<ProjectStatusId, string> = {
   active: 'Active',
+  on_hold: 'On hold',
   archived: 'Closed',
   excluded: 'Excluded',
 };
@@ -59,6 +60,7 @@ export function ProjectDetail() {
   const updateMut = useUpdateProject(projectId ?? '');
   const archiveMut = useArchiveProject(projectId ?? '');
   const hideMut = useHideProject(projectId ?? '');
+  const holdMut = useHoldProject(projectId ?? '');
   const restoreMut = useRestoreProject(projectId ?? '');
 
   const [editing, setEditing] = useState(false);
@@ -136,6 +138,8 @@ export function ProjectDetail() {
         await archiveMut.mutateAsync(reason);
       } else if (stateAction.next === 'excluded') {
         await hideMut.mutateAsync(reason);
+      } else if (stateAction.next === 'on_hold') {
+        await holdMut.mutateAsync(reason);
       } else if (stateAction.next === 'active') {
         await restoreMut.mutateAsync(reason);
       }

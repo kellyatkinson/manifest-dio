@@ -94,6 +94,10 @@ export function taskStatusLabel(s: TaskStatusId): string {
       return 'To do';
     case 'in_progress':
       return 'In progress';
+    case 'waiting':
+      return 'Waiting';
+    case 'hold':
+      return 'On hold';
     case 'done':
       return 'Done';
     case 'cancelled':
@@ -156,10 +160,23 @@ export function dash(v: string | null | undefined): string {
 // active → "Active". Falls back to the raw value for anything we don't
 // recognise (free-text fields, IDs, timestamps).
 
+// Status enum values for both project lifecycle (active/on_hold/archived/excluded)
+// and task statuses (todo/in_progress/waiting/hold/done/cancelled). The two
+// sets don't overlap, so one combined map covers both project_history and
+// task_history rows where field_name='status'.
 const STATUS_VALUE_LABEL: Record<string, string> = {
+  // Project lifecycle
   active: 'Active',
+  on_hold: 'On hold',
   archived: 'Closed',
   excluded: 'Excluded',
+  // Task statuses
+  todo: 'To do',
+  in_progress: 'In progress',
+  waiting: 'Waiting',
+  hold: 'On hold',
+  done: 'Done',
+  cancelled: 'Cancelled',
 };
 
 const PROJECT_TYPE_VALUE_LABEL: Record<string, string> = {

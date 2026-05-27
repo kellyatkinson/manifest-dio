@@ -19,6 +19,7 @@ import type {
   Project,
   ProjectHistoryRow,
   HealthId,
+  ProjectStatusId,
   ProjectTypeId,
   RpcOk,
   Setting,
@@ -64,7 +65,7 @@ export async function callRpc<T = Record<string, unknown>>(
 // Reads (PostgREST -- direct table selects)
 // =========================================================================
 
-export async function listProjects(status: 'active' | 'archived' | 'excluded' | 'all' = 'active'): Promise<Project[]> {
+export async function listProjects(status: ProjectStatusId | 'all' = 'active'): Promise<Project[]> {
   let query = supabase.from('projects').select('*').order('display_order', { ascending: true });
   if (status !== 'all') {
     query = supabase.from('projects').select('*').eq('status', status).order(
@@ -223,13 +224,19 @@ export function adminUpdateProject(projectId: string, payload: UpdateProjectInpu
   });
 }
 
+// Thin wrapper around adminUpdateProject -- mirrors the SQL-side wrapper
+// pattern used for admin_set_status / admin_set_owner. No dedicated
+// admin_set_health RPC exists; the update path already handles health
+// validation, history recording, and inferred-clearing.
 export function adminSetHealth(projectId: string, health: HealthId, confidence?: ConfidenceId, note?: string) {
-  return callRpc('admin_set_health', {
-    p_project_id: projectId,
-    p_health: health,
-    p_confidence: confidence ?? null,
-    p_note: note ?? null,
-  });
+  return adminUpdateProject(
+    projectId,
+    {
+      health,
+      ...(confidence ? { health_confidence: confidence } : {}),
+    },
+    note,
+  );
 }
 
 export function adminSetOwner(projectId: string, owner: string | null, confidence?: ConfidenceId, note?: string) {
@@ -251,6 +258,10 @@ export function adminArchiveProject(projectId: string, reason?: string) {
 
 export function adminHideProject(projectId: string, reason?: string) {
   return callRpc('admin_hide_project', { p_project_id: projectId, p_reason: reason ?? null });
+}
+
+export function adminHoldProject(projectId: string, reason?: string) {
+  return callRpc('admin_hold_project', { p_project_id: projectId, p_reason: reason ?? null });
 }
 
 export function adminRestoreProject(projectId: string, reason?: string) {

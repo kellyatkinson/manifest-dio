@@ -15,9 +15,9 @@
 
 export type ProjectTypeId = 'project' | 'programme' | 'operational';
 export type HealthId = 'green' | 'amber' | 'red' | 'placeholder';
-export type ProjectStatusId = 'active' | 'archived' | 'excluded';
+export type ProjectStatusId = 'active' | 'on_hold' | 'archived' | 'excluded';
 export type ConfidenceId = 'high' | 'medium' | 'low';
-export type TaskStatusId = 'todo' | 'in_progress' | 'done' | 'cancelled';
+export type TaskStatusId = 'todo' | 'in_progress' | 'waiting' | 'hold' | 'done' | 'cancelled';
 
 // ---- Reference table rows -----------------------------------------------
 

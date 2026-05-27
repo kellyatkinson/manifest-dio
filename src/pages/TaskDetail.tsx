@@ -25,7 +25,7 @@ import type { TaskStatusId } from '@/lib/types';
 
 import styles from './TaskDetail.module.css';
 
-const STATUSES: TaskStatusId[] = ['todo', 'in_progress', 'done', 'cancelled'];
+const STATUSES: TaskStatusId[] = ['todo', 'in_progress', 'waiting', 'hold', 'done', 'cancelled'];
 
 interface Props {
   taskId: string;

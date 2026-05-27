@@ -91,6 +91,7 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
             onChange={(e) => set('state', e.target.value as ProjectStatusId | 'all')}
           >
             <option value="active">Active</option>
+            <option value="on_hold">On hold</option>
             <option value="archived">Closed</option>
             <option value="excluded">Excluded</option>
             <option value="all">All</option>

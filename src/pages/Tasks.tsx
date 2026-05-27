@@ -13,6 +13,8 @@ const STATUS_TABS: { id: TaskStatusId | 'open' | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'todo', label: 'To do' },
   { id: 'in_progress', label: 'In progress' },
+  { id: 'waiting', label: 'Waiting' },
+  { id: 'hold', label: 'On hold' },
   { id: 'done', label: 'Done' },
 ];
 
@@ -35,7 +37,9 @@ export function Tasks() {
     const term = search.trim().toLowerCase();
     return tasks.filter((t) => {
       if (statusFilter === 'open') {
-        if (t.status !== 'todo' && t.status !== 'in_progress') return false;
+        // "Open" = still on the radar. Waiting counts (expected unblocker).
+        // Hold is intentionally excluded -- it's the someday/maybe bucket.
+        if (t.status !== 'todo' && t.status !== 'in_progress' && t.status !== 'waiting') return false;
       } else if (statusFilter !== 'all') {
         if (t.status !== statusFilter) return false;
       }

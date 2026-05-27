@@ -34,7 +34,7 @@ interface Props {
 
 const VALID_HEALTH: ReadonlySet<HealthId> = new Set(['green', 'amber', 'red', 'placeholder']);
 const VALID_TYPE: ReadonlySet<ProjectTypeId> = new Set(['project', 'programme', 'operational']);
-const VALID_STATUS: ReadonlySet<ProjectStatusId> = new Set(['active', 'archived', 'excluded']);
+const VALID_STATUS: ReadonlySet<ProjectStatusId> = new Set(['active', 'on_hold', 'archived', 'excluded']);
 
 export function Portfolio({ mode, view }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
