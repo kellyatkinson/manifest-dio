@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
+import { ManifestIcon } from './icons/ManifestIcon';
 import styles from './Sidebar.module.css';
 
 interface NavItem {
@@ -70,7 +71,7 @@ export function Sidebar() {
   return (
     <div className={styles.root}>
       <div className={styles.brand}>
-        <FiligreeMark />
+        <ManifestIcon className={styles.brandIcon} />
         <div className={styles.brandTitle}>Manifest</div>
         <div className={styles.brandSub}>Portfolio Inventory</div>
       </div>

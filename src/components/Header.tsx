@@ -5,6 +5,7 @@ import { signOut, useUser } from '@/lib/auth';
 import { useProject } from '@/hooks/useProjects';
 import { useTask } from '@/hooks/useTasks';
 
+import { ManifestIcon } from './icons/ManifestIcon';
 import styles from './Header.module.css';
 
 interface Crumb {
@@ -45,12 +46,34 @@ function useCrumbs(): Crumb[] {
   return [{ label: 'Manifest' }];
 }
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+  drawerOpen?: boolean;
+}
+
+export function Header({ onMenuClick, drawerOpen = false }: HeaderProps = {}) {
   const { user } = useUser();
   const crumbs = useCrumbs();
 
   return (
     <div className={styles.root}>
+      {/* Mobile hamburger -- CSS hides this on viewports wider than 720px. */}
+      <button
+        type="button"
+        className={styles.menuBtn}
+        aria-label={drawerOpen ? 'Close navigation' : 'Open navigation'}
+        aria-expanded={drawerOpen}
+        aria-controls="primary-nav"
+        onClick={onMenuClick}
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden focusable="false">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+        </svg>
+      </button>
+
+      {/* App brand mark -- mobile only (sidebar carries the brand on desktop). */}
+      <ManifestIcon className={styles.brandMark} />
+
       <div className={styles.crumbs}>
         {crumbs.map((c, i) => {
           const isLast = i === crumbs.length - 1;
