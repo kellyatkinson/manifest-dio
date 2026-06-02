@@ -18,6 +18,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
+import { ZendeskTicketsInput } from '@/components/ZendeskTickets';
 import { useArchiveTask, useTask, useUpdateTask } from '@/hooks/useTasks';
 import { useTaskHistory } from '@/hooks/useHistory';
 import { taskStatusLabel } from '@/lib/format';
@@ -40,6 +41,7 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
   const archiveMut = useArchiveTask(taskId, projectId);
 
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const [zendeskDraft, setZendeskDraft] = useState<number[]>([]);
   const [dirty, setDirty] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
 
@@ -54,6 +56,7 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
       priority: task.priority?.toString() ?? '',
       owner: task.owner ?? '',
     });
+    setZendeskDraft(task.zendesk_tickets ?? []);
     setDirty(false);
   }, [task]);
 
@@ -81,6 +84,13 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
     if (draft.owner !== (task.owner ?? '')) payload.owner = draft.owner || null;
     const draftP = draft.priority === '' ? null : Number(draft.priority);
     if (draftP !== task.priority) payload.priority = draftP;
+    const existingTickets = task.zendesk_tickets ?? [];
+    if (
+      zendeskDraft.length !== existingTickets.length ||
+      zendeskDraft.some((n, i) => n !== existingTickets[i])
+    ) {
+      payload.zendesk_tickets = zendeskDraft;
+    }
 
     if (Object.keys(payload).length === 0) {
       onClose();
@@ -182,6 +192,16 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
                   value={draft.description ?? ''}
                   onChange={(e) => setField('description', e.target.value)}
                   className={styles.input}
+                />
+              </Field>
+              <Field label="Zendesk tickets" wide>
+                <ZendeskTicketsInput
+                  ids={zendeskDraft}
+                  onChange={(next) => {
+                    setZendeskDraft(next);
+                    setDirty(true);
+                  }}
+                  placeholder="Paste a ticket # or Dio Zendesk link"
                 />
               </Field>
             </div>

@@ -194,6 +194,7 @@ export interface CreateProjectInput {
   owner_inferred?: boolean;
   owner_confidence?: ConfidenceId;
   display_order?: number;
+  zendesk_tickets?: number[];
 }
 
 export function adminCreateProject(payload: CreateProjectInput) {
@@ -214,6 +215,7 @@ export interface UpdateProjectInput {
   parent_id?: string | null;
   description?: string | null;
   display_order?: number;
+  zendesk_tickets?: number[];
 }
 
 export function adminUpdateProject(projectId: string, payload: UpdateProjectInput, note?: string) {
@@ -307,6 +309,7 @@ export interface CreateTaskInput {
   priority?: number;
   owner?: string;
   order_index?: number;
+  zendesk_tickets?: number[];
 }
 
 export function adminCreateTask(payload: CreateTaskInput) {
@@ -321,6 +324,7 @@ export interface UpdateTaskInput {
   priority?: number | null;
   owner?: string | null;
   order_index?: number;
+  zendesk_tickets?: number[];
 }
 
 export function adminUpdateTask(taskId: string, payload: UpdateTaskInput, note?: string) {
@@ -418,6 +422,7 @@ export interface LogActivityInput {
   content: string;
   kind?: string | null;
   links?: { url: string; label?: string | null; kind?: string | null }[];
+  zendesk_tickets?: number[];
 }
 
 export function adminLogActivity(input: LogActivityInput) {
@@ -426,6 +431,7 @@ export function adminLogActivity(input: LogActivityInput) {
     p_content: input.content,
     p_kind: input.kind ?? null,
     p_links: input.links ?? [],
+    p_zendesk_tickets: input.zendesk_tickets ?? [],
   });
 }
 

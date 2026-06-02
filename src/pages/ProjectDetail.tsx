@@ -24,6 +24,7 @@ import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
+import { ZendeskTicketsChips, ZendeskTicketsInput } from '@/components/ZendeskTickets';
 import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useHoldProject, useRestoreProject } from '@/hooks/useProjects';
 import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
@@ -65,6 +66,7 @@ export function ProjectDetail() {
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const [zendeskDraft, setZendeskDraft] = useState<number[]>([]);
   const [stateAction, setStateAction] = useState<{ next: ProjectStatusId; label: string } | null>(null);
   const [stateReason, setStateReason] = useState('');
   const [popover, setPopover] = useState<{
@@ -92,6 +94,7 @@ export function ProjectDetail() {
       parent_id: project.parent_id ?? '',
       description: project.description ?? '',
     });
+    setZendeskDraft(project.zendesk_tickets ?? []);
     setEditing(true);
   }
 
@@ -117,6 +120,13 @@ export function ProjectDetail() {
       payload.parent_id = draft.parent_id || null;
     if (draft.description !== (project.description ?? ''))
       payload.description = draft.description || null;
+    const existingTickets = project.zendesk_tickets ?? [];
+    if (
+      zendeskDraft.length !== existingTickets.length ||
+      zendeskDraft.some((n, i) => n !== existingTickets[i])
+    ) {
+      payload.zendesk_tickets = zendeskDraft;
+    }
 
     if (Object.keys(payload).length === 0) {
       setEditing(false);
@@ -276,6 +286,12 @@ export function ProjectDetail() {
                 )}
               </div>
             </div>
+            {project.zendesk_tickets && project.zendesk_tickets.length > 0 && (
+              <div className={styles.panel}>
+                <h3 className={styles.panelTitle}>Zendesk tickets</h3>
+                <ZendeskTicketsChips ids={project.zendesk_tickets} />
+              </div>
+            )}
             <div className={styles.panel}>
               <h3 className={styles.panelTitle}>Where it lives</h3>
               <div className={styles.panelGrid}>
@@ -421,6 +437,13 @@ export function ProjectDetail() {
                 placeholder="Page title (without [[ ]])"
               />
             </EditField>
+            <EditField label="Zendesk tickets" wide>
+              <ZendeskTicketsInput
+                ids={zendeskDraft}
+                onChange={setZendeskDraft}
+                placeholder="Paste a ticket # or Dio Zendesk link"
+              />
+            </EditField>
             {(draft.project_type ?? project.project_type) === 'project' && programmes.length > 0 && (
               <EditField label="Parent programme">
                 <select
@@ -443,6 +466,7 @@ export function ProjectDetail() {
                 onClick={() => {
                   setEditing(false);
                   setDraft({});
+                  setZendeskDraft([]);
                 }}
               >
                 Cancel

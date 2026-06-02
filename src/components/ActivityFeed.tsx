@@ -11,6 +11,7 @@
 import { Link } from 'react-router-dom';
 
 import { LinkChip } from '@/components/LinkChip';
+import { ZendeskTicketsChips } from '@/components/ZendeskTickets';
 import { useDeleteActivity } from '@/hooks/useActivity';
 import type { ActivityEntry } from '@/lib/types';
 
@@ -89,9 +90,12 @@ export function ActivityFeed({
             </button>
           </div>
           <div className={styles.content}>{e.content}</div>
-          {e.links && e.links.length > 0 && (
+          {((e.links && e.links.length > 0) || (e.zendesk_tickets && e.zendesk_tickets.length > 0)) && (
             <div className={styles.links}>
-              {e.links.map((l) => (
+              {e.zendesk_tickets && e.zendesk_tickets.length > 0 && (
+                <ZendeskTicketsChips ids={e.zendesk_tickets} />
+              )}
+              {e.links && e.links.map((l) => (
                 <LinkChip key={l.id} link={l} />
               ))}
             </div>

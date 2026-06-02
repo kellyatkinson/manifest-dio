@@ -60,6 +60,8 @@ export interface Project {
 
   display_order: number;
 
+  zendesk_tickets: number[];
+
   created_at: string;
   created_by_email: string | null;
   updated_at: string;
@@ -82,6 +84,7 @@ export interface Task {
   todoist_url: string | null;
   last_synced_at: string | null;
   sync_source: 'manifest' | 'todoist';
+  zendesk_tickets: number[];
   created_at: string;
   created_by_email: string | null;
   updated_at: string;
@@ -182,6 +185,7 @@ export interface ActivityEntry {
   kind: ActivityKind | null;
   created_at: string;
   created_by_email: string | null;
+  zendesk_tickets: number[];
   /** Populated when reads request the embedded relation. */
   links?: ActivityLink[];
   /** Joined from projects when the read includes it. */

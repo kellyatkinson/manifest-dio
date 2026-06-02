@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { formatDate, sortableDateKey, taskStatusLabel } from '@/lib/format';
 import type { Task, TaskStatusId } from '@/lib/types';
+import { ZendeskTicketsChips } from './ZendeskTickets';
 import { useCreateTask, useSetTaskStatus } from '@/hooks/useTasks';
 
 import styles from './TaskList.module.css';
@@ -115,7 +116,12 @@ function TaskRow({
         }}
       />
       <div className={`${styles.taskTitle} ${done ? styles.done : ''} ${cancelled ? styles.cancelled : ''}`}>
-        {task.title}
+        <span>{task.title}</span>
+        {task.zendesk_tickets && task.zendesk_tickets.length > 0 && (
+          <span className={styles.tickets} onClick={(e) => e.stopPropagation()}>
+            <ZendeskTicketsChips ids={task.zendesk_tickets} />
+          </span>
+        )}
       </div>
       <div className={`${styles.due} ${overdue ? styles.dueOverdue : ''}`}>
         {task.due_date ? formatDate(task.due_date) : ''}

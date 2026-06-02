@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------
 
 import type { ConfidenceId, HealthId, ProjectTypeId, TaskStatusId } from './types';
+import { formatTicketList } from './zendesk';
 
 const NZ_TIMEZONE = 'Pacific/Auckland';
 
@@ -144,6 +145,8 @@ export function humaniseFieldName(field: string): string {
       return 'Archived';
     case 'order_index':
       return 'Order';
+    case 'zendesk_tickets':
+      return 'Zendesk tickets';
     default:
       return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
@@ -198,6 +201,10 @@ export function humaniseFieldValue(field: string, value: string | null | undefin
     case 'health_confidence':
     case 'owner_confidence':
       return confidenceLabel(value as ConfidenceId);
+    case 'zendesk_tickets': {
+      const rendered = formatTicketList(value);
+      return rendered === '' ? '—' : rendered;
+    }
     default:
       return value;
   }

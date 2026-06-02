@@ -165,3 +165,10 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Inline Zendesk ticket chips appearing in the title cell. */
+.tickets {
+  display: inline-flex;
+  margin-left: 8px;
+  vertical-align: middle;
+}

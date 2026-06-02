@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 
 import { useCreateProject } from '@/hooks/useProjects';
 import type { Project, ProjectTypeId, HealthId } from '@/lib/types';
+import { ZendeskTicketsInput } from './ZendeskTickets';
 
 import styles from './CreateProjectModal.module.css';
 
@@ -22,6 +23,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
   const [primaryLocation, setPrimaryLocation] = useState('');
   const [logseqPage, setLogseqPage] = useState('');
   const [parentId, setParentId] = useState('');
+  const [zendeskTickets, setZendeskTickets] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
@@ -39,6 +41,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
         primary_location: primaryLocation.trim() || undefined,
         logseq_page: logseqPage.trim() || undefined,
         parent_id: parentId || null,
+        ...(zendeskTickets.length > 0 ? { zendesk_tickets: zendeskTickets } : {}),
       });
       onClose();
     } catch (err) {
@@ -178,6 +181,16 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
                 placeholder="Page title (without [[ ]])"
               />
             </div>
+          </div>
+
+          <div className={styles.row}>
+            <label className={styles.label} htmlFor="cp-zendesk">Zendesk tickets</label>
+            <ZendeskTicketsInput
+              id="cp-zendesk"
+              ids={zendeskTickets}
+              onChange={setZendeskTickets}
+              placeholder="Paste a ticket # or Dio Zendesk link"
+            />
           </div>
 
           {error && <div className={styles.error}>{error}</div>}

@@ -13,6 +13,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { useLogActivity } from '@/hooks/useActivity';
 import { useProjects } from '@/hooks/useProjects';
 import { classifyUrl, extractUrls } from '@/lib/linkClassify';
+import { ZendeskTicketsInput } from './ZendeskTickets';
 
 import styles from './QuickLog.module.css';
 
@@ -41,6 +42,8 @@ export function QuickLog({
   const [content, setContent] = useState('');
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [showLinks, setShowLinks] = useState(false);
+  const [tickets, setTickets] = useState<number[]>([]);
+  const [showTickets, setShowTickets] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
@@ -91,10 +94,13 @@ export function QuickLog({
         project_id: effectiveProjectId,
         content: trimmed,
         links: Array.from(byUrl.values()),
+        zendesk_tickets: tickets,
       });
       setContent('');
       setLinks([]);
       setShowLinks(false);
+      setTickets([]);
+      setShowTickets(false);
       // Intentionally retain selectedProjectId so consecutive entries
       // against the same project don't require re-picking it.
     } catch (err) {
@@ -167,6 +173,15 @@ export function QuickLog({
           {showLinks ? '— Link' : '+ Link'}
         </button>
         <button
+          type="button"
+          className={styles.linkBtn}
+          onClick={() => setShowTickets((s) => !s)}
+          aria-pressed={showTickets}
+          title={showTickets ? 'Hide tickets' : 'Attach a Zendesk ticket'}
+        >
+          {showTickets ? '— Ticket' : '+ Ticket'}
+        </button>
+        <button
           type="submit"
           className={styles.submitBtn}
           disabled={log.isPending || !content.trim()}
@@ -177,6 +192,19 @@ export function QuickLog({
 
       {contextHint && !allowProjectSelect && (
         <div className={styles.contextHint}>Will be logged against: {contextHint}</div>
+      )}
+
+      {showTickets && (
+        <div className={styles.linkBox}>
+          <p className={styles.linkHint}>
+            Paste a Dio Zendesk ticket # or link. Add as many as you need.
+          </p>
+          <ZendeskTicketsInput
+            ids={tickets}
+            onChange={setTickets}
+            placeholder="e.g. 219497 or https://diocesan.zendesk.com/agent/tickets/219497"
+          />
+        </div>
       )}
 
       {showLinks && (
