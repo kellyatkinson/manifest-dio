@@ -1,0 +1,79 @@
+/* ---------------------------------------------------------------
+   KpiStrip — hero stat tiles on the Overview page.
+   --------------------------------------------------------------- */
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-top: 3px solid var(--dio-navy);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  font-family: var(--font-sans);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tile:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lifted);
+  text-decoration: none;
+}
+
+.value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--dio-navy);
+  letter-spacing: -1px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dio-grey);
+}
+
+.sub {
+  font-size: 11px;
+  color: var(--dio-grey-soft);
+}
+
+/* Tone = accent bar + number colour */
+.tone_navy {
+  border-top-color: var(--dio-navy);
+}
+.tone_red {
+  border-top-color: var(--status-red);
+}
+.tone_red .value {
+  color: var(--status-red);
+}
+.tone_amber {
+  border-top-color: var(--status-amber);
+}
+.tone_amber .value {
+  color: var(--status-amber);
+}
+.tone_green {
+  border-top-color: var(--status-green);
+}
+
+@media (max-width: 760px) {
+  .strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

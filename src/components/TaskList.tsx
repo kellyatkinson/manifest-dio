@@ -5,9 +5,11 @@
 // Clicking the checkbox toggles done<->todo (admin_set_task_status).
 // Clicking the row itself opens the task detail modal via parent.
 // "Add task" row inlines a new task creation.
+// Sort control (2026-06-12): Default / Due date / Priority /
+// Status / Title — choice remembered per browser via localStorage.
 // ---------------------------------------------------------------
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { formatDate, sortableDateKey, taskStatusLabel } from '@/lib/format';
@@ -24,12 +26,110 @@ interface Props {
 
 const PRIORITY_LABEL: Record<number, string> = { 1: 'P1', 2: 'P2', 3: 'P3', 4: 'P4' };
 
+// ---- Sorting -------------------------------------------------------------
+
+type SortKey = 'default' | 'due' | 'priority' | 'status' | 'title';
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'default', label: 'Default' },
+  { value: 'due', label: 'Due date' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'status', label: 'Status' },
+  { value: 'title', label: 'Title' },
+];
+
+/** Active work first, finished last — mirrors task_statuses.display_order. */
+const STATUS_ORDER: Record<TaskStatusId, number> = {
+  todo: 1,
+  in_progress: 2,
+  waiting: 3,
+  hold: 4,
+  done: 5,
+  cancelled: 6,
+};
+
+const SORT_STORAGE_KEY = 'manifest.taskSort';
+
+function loadStoredSort(): SortKey {
+  try {
+    const v = localStorage.getItem(SORT_STORAGE_KEY);
+    if (v && SORT_OPTIONS.some((o) => o.value === v)) return v as SortKey;
+  } catch {
+    /* private mode / storage unavailable — fall through */
+  }
+  return 'default';
+}
+
+/** Due date asc, undated last; ties by priority then title. */
+function byDue(a: Task, b: Task): number {
+  const da = a.due_date ?? '9999-12-31';
+  const db = b.due_date ?? '9999-12-31';
+  if (da !== db) return da < db ? -1 : 1;
+  return byPriority(a, b);
+}
+
+/** Priority asc (P1 first), unset last; ties by due date then title. */
+function byPriority(a: Task, b: Task): number {
+  const pa = a.priority ?? 99;
+  const pb = b.priority ?? 99;
+  if (pa !== pb) return pa - pb;
+  const da = a.due_date ?? '9999-12-31';
+  const db = b.due_date ?? '9999-12-31';
+  if (da !== db) return da < db ? -1 : 1;
+  return a.title.localeCompare(b.title);
+}
+
+function byStatus(a: Task, b: Task): number {
+  const sa = STATUS_ORDER[a.status] ?? 99;
+  const sb = STATUS_ORDER[b.status] ?? 99;
+  if (sa !== sb) return sa - sb;
+  return byDue(a, b);
+}
+
+function byTitle(a: Task, b: Task): number {
+  return a.title.localeCompare(b.title);
+}
+
+function sortTasks(tasks: Task[], key: SortKey): Task[] {
+  if (key === 'default') return tasks;
+  const sorted = [...tasks];
+  switch (key) {
+    case 'due':
+      sorted.sort(byDue);
+      break;
+    case 'priority':
+      sorted.sort(byPriority);
+      break;
+    case 'status':
+      sorted.sort(byStatus);
+      break;
+    case 'title':
+      sorted.sort(byTitle);
+      break;
+  }
+  return sorted;
+}
+
+// ---- Component -----------------------------------------------------------
+
 export function TaskList({ projectId, tasks }: Props) {
   const navigate = useNavigate();
   const [newTitle, setNewTitle] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>(loadStoredSort);
   const createMut = useCreateTask(projectId);
 
   const today = sortableDateKey(new Date().toISOString());
+
+  const sortedTasks = useMemo(() => sortTasks(tasks, sortKey), [tasks, sortKey]);
+
+  function handleSortChange(value: SortKey) {
+    setSortKey(value);
+    try {
+      localStorage.setItem(SORT_STORAGE_KEY, value);
+    } catch {
+      /* storage unavailable — selection still applies this session */
+    }
+  }
 
   return (
     <section className={styles.root}>
@@ -40,13 +140,29 @@ export function TaskList({ projectId, tasks }: Props) {
             {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
           </span>
         </h2>
+        {tasks.length > 1 && (
+          <label className={styles.sortWrap}>
+            <span className={styles.sortLabel}>Sort</span>
+            <select
+              className={styles.sortSelect}
+              value={sortKey}
+              onChange={(e) => handleSortChange(e.target.value as SortKey)}
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
 
       {tasks.length === 0 ? (
         <div className={styles.empty}>No tasks yet. Add one below to get started.</div>
       ) : (
         <div className={styles.list}>
-          {tasks.map((t) => (
+          {sortedTasks.map((t) => (
             <TaskRow key={t.id} task={t} projectId={projectId} today={today} onOpen={() => navigate(`/portfolio/${projectId}/tasks/${t.id}`)} />
           ))}
         </div>

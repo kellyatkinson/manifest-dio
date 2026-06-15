@@ -26,6 +26,32 @@
   margin-left: 6px;
 }
 
+/* ---- Sort control (head, right side) ---- */
+
+.sortWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sortLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--dio-grey-soft);
+}
+
+.sortSelect {
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--dio-light);
+  color: var(--dio-navy);
+  cursor: pointer;
+}
+
 .empty {
   padding: var(--sp-6);
   text-align: center;
