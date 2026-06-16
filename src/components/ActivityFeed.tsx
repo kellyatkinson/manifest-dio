@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { LinkChip } from '@/components/LinkChip';
 import { ZendeskTicketsChips } from '@/components/ZendeskTickets';
 import { useDeleteActivity } from '@/hooks/useActivity';
+import { useUrls } from '@/hooks/useUrls';
 import type { ActivityEntry } from '@/lib/types';
 
 import styles from './ActivityFeed.module.css';
@@ -48,6 +49,7 @@ export function ActivityFeed({
   emptyMessage = 'No activity logged yet.',
 }: Props) {
   const deleteMut = useDeleteActivity();
+  const { projectPath } = useUrls();
   const visible = typeof limit === 'number' ? entries.slice(0, limit) : entries;
 
   if (visible.length === 0) {
@@ -63,14 +65,7 @@ export function ActivityFeed({
               {formatRelative(e.created_at)}
             </time>
             {showProject && e.project && (
-              <Link
-                to={
-                  e.project.parent_id
-                    ? `/portfolio/${e.project.id}`
-                    : `/portfolio/${e.project.id}`
-                }
-                className={styles.projectTag}
-              >
+              <Link to={projectPath(e.project.id)} className={styles.projectTag}>
                 {e.project.name}
               </Link>
             )}

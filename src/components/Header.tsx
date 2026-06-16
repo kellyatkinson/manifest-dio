@@ -4,6 +4,7 @@ import { Fragment } from 'react';
 import { signOut, useUser } from '@/lib/auth';
 import { useProject } from '@/hooks/useProjects';
 import { useTask } from '@/hooks/useTasks';
+import { useUrls } from '@/hooks/useUrls';
 
 import { ManifestIcon } from './icons/ManifestIcon';
 import styles from './Header.module.css';
@@ -16,9 +17,12 @@ interface Crumb {
 function useCrumbs(): Crumb[] {
   const location = useLocation();
   const params = useParams<{ projectId?: string; taskId?: string }>();
+  const { resolveProject, resolveTask, projectKey } = useUrls();
+  const projectId = resolveProject(params.projectId);
+  const taskId = resolveTask(params.taskId);
 
-  const { data: project } = useProject(params.projectId);
-  const { data: task } = useTask(params.taskId);
+  const { data: project } = useProject(projectId);
+  const { data: task } = useTask(taskId);
 
   const path = location.pathname;
 
@@ -35,7 +39,7 @@ function useCrumbs(): Crumb[] {
   if (path.startsWith('/portfolio/') && params.projectId) {
     const crumbs: Crumb[] = [
       { label: 'Portfolio', to: '/portfolio' },
-      { label: project?.name ?? '…', to: `/portfolio/${params.projectId}` },
+      { label: project?.name ?? '…', to: `/portfolio/${projectKey(projectId)}` },
     ];
     if (params.taskId) {
       crumbs.push({ label: task?.title ?? 'Task' });

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import { StatusPill } from './StatusPill';
 import { dash } from '@/lib/format';
 import type { Project } from '@/lib/types';
@@ -13,16 +14,17 @@ interface Props {
 
 export function ProgrammeCard({ project, children = [] }: Props) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
 
   return (
     <article className={styles.card}>
       {/* ── Programme header (clickable) ── */}
       <div
         className={styles.main}
-        onClick={() => navigate(`/programmes/${project.id}`)}
+        onClick={() => navigate(projectPath(project.id))}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && navigate(`/programmes/${project.id}`)}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(projectPath(project.id))}
         aria-label={`Open programme: ${project.name}`}
       >
         <div className={styles.header}>
@@ -69,10 +71,10 @@ export function ProgrammeCard({ project, children = [] }: Props) {
               <div
                 key={child.id}
                 className={styles.childCard}
-                onClick={() => navigate(`/portfolio/${child.id}`)}
+                onClick={() => navigate(projectPath(child.id))}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${child.id}`)}
+                onKeyDown={(e) => e.key === 'Enter' && navigate(projectPath(child.id))}
               >
                 <div className={styles.childTop}>
                   <StatusPill status={child.health} inferred={child.health_inferred} />

@@ -5,8 +5,10 @@
 // Collapsible -- starts collapsed; click header to expand.
 // ---------------------------------------------------------------
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import { formatDateTime, humaniseFieldName, humaniseFieldValue } from '@/lib/format';
 import type { ProjectHistoryRow, TaskHistoryRow } from '@/lib/types';
 
@@ -36,6 +38,23 @@ export function HistoryFeed({
   emptyMessage = 'No history yet.',
 }: Props) {
   const [open, setOpen] = useState(defaultOpen);
+
+  // Resolve project_id / parent_id UUIDs in history to linked project names.
+  const { projectPath, projectName } = useUrls();
+
+  function renderValue(field: string, value: string | null): ReactNode {
+    if ((field === 'project_id' || field === 'parent_id') && value) {
+      const name = projectName(value);
+      if (name) {
+        return (
+          <Link to={projectPath(value)} style={{ color: 'var(--dio-navy)', fontWeight: 600 }}>
+            {name}
+          </Link>
+        );
+      }
+    }
+    return humaniseFieldValue(field, value);
+  }
 
   const groups = useMemo<ChangeGroup[]>(() => {
     const map = new Map<string, ChangeGroup>();
@@ -82,8 +101,8 @@ export function HistoryFeed({
                   <div key={row.id} className={styles.change}>
                     Changed <span className={styles.fieldName}>{humaniseFieldName(row.field_name)}</span>{' '}
                     <span className={styles.from}>
-                      from {humaniseFieldValue(row.field_name, row.old_value)} to{' '}
-                      {humaniseFieldValue(row.field_name, row.new_value)}
+                      from {renderValue(row.field_name, row.old_value)} to{' '}
+                      {renderValue(row.field_name, row.new_value)}
                     </span>
                     {isProjectRow(row) && row.was_inferred && (
                       <span className={styles.inferredTag}>was inferred</span>

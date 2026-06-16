@@ -13,6 +13,7 @@
 
 import { useNavigate } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import { StatusPill } from './StatusPill';
 import { accentFor } from '@/lib/programmeAccent';
 import type { HealthId, Project } from '@/lib/types';
@@ -35,6 +36,7 @@ const HEALTH_DOT_CLASS: Record<HealthId, string> = {
 
 export function ProgrammeTile({ programme, children, weeklyActivity = 0 }: Props) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
   const accent = accentFor(programme.id || programme.name);
 
   return (
@@ -42,7 +44,7 @@ export function ProgrammeTile({ programme, children, weeklyActivity = 0 }: Props
       type="button"
       className={styles.tile}
       style={{ borderLeftColor: accent }}
-      onClick={() => navigate(`/programmes/${programme.id}`)}
+      onClick={() => navigate(projectPath(programme.id))}
       title={`Open programme: ${programme.name}`}
     >
       <div className={styles.head}>

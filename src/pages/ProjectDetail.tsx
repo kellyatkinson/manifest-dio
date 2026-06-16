@@ -13,8 +13,8 @@
 // changes so the deep link works.
 // ---------------------------------------------------------------
 
-import { useMemo, useState, type ReactNode } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ActivityFeed } from '@/components/ActivityFeed';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -29,6 +29,7 @@ import { useProject, useProjects, useUpdateProject, useArchiveProject, useHidePr
 import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
+import { useUrls } from '@/hooks/useUrls';
 import { formatDateTime, humaniseFieldName, humaniseFieldValue, projectTypeLabel } from '@/lib/format';
 import type { ConfidenceId, HealthId, ProjectHistoryRow, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
@@ -48,8 +49,12 @@ const STATE_LABEL: Record<ProjectStatusId, string> = {
 };
 
 export function ProjectDetail() {
-  const { projectId, taskId } = useParams<{ projectId: string; taskId: string }>();
+  const { projectId: projectParam, taskId: taskParam } = useParams<{ projectId: string; taskId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { resolveProject, resolveTask, projectKey, projectPath, taskPath } = useUrls();
+  const projectId = resolveProject(projectParam);
+  const taskId = resolveTask(taskParam);
 
   const { data: project, isLoading, error } = useProject(projectId);
   const { data: tasks = [] } = useTasksForProject(projectId);
@@ -73,6 +78,14 @@ export function ProjectDetail() {
     field: 'health' | 'owner';
     anchor: { x: number; y: number };
   } | null>(null);
+
+  // Normalise the address bar to the readable slug-hex form (and rewrite old
+  // UUID links). Stays on the /portfolio base — this is the project/edit route.
+  useEffect(() => {
+    if (!project) return;
+    const pretty = taskId ? taskPath(project.id, taskId) : `/portfolio/${projectKey(project.id)}`;
+    if (location.pathname !== pretty) navigate(pretty, { replace: true });
+  }, [project, taskId, location.pathname, projectKey, taskPath, navigate]);
 
   if (isLoading) return <div className={styles.placeholder}>Loading project…</div>;
   if (error) return <div className={styles.error}>Could not load project: {(error as Error).message}</div>;
@@ -215,7 +228,7 @@ export function ProjectDetail() {
               <button
                 type="button"
                 className={styles.programmePill}
-                onClick={() => navigate(`/programmes/${project.parent_id}`)}
+                onClick={() => navigate(projectPath(project.parent_id))}
                 title="Open parent programme"
               >
                 <span aria-hidden>↳ </span>
@@ -523,7 +536,7 @@ export function ProjectDetail() {
         <TaskDetail
           taskId={taskId}
           projectId={projectId}
-          onClose={() => navigate(`/portfolio/${projectId}`)}
+          onClose={() => navigate(`/portfolio/${projectKey(project.id)}`)}
         />
       )}
 

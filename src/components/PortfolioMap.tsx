@@ -12,9 +12,10 @@
 // drill-in by click.
 // ---------------------------------------------------------------
 
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import { statusLabel } from '@/lib/format';
 import type { HealthId, Project, ProjectTypeId } from '@/lib/types';
 
@@ -22,6 +23,27 @@ import styles from './PortfolioMap.module.css';
 
 interface Props {
   projects: Project[];
+}
+
+// Stream → accent colour (functional categorical encoding, drawn as a
+// left-edge stripe so health stays the tile fill). Unknown / null stream
+// gets no stripe.
+const STREAM_COLOR: Record<string, string> = {
+  operations: 'var(--stream-operations)',
+  change: 'var(--stream-change)',
+  governance: 'var(--stream-governance)',
+};
+
+const STREAM_LEGEND: { id: string; label: string }[] = [
+  { id: 'operations', label: 'Operations' },
+  { id: 'change', label: 'Change' },
+  { id: 'governance', label: 'Governance' },
+];
+
+/** Left-edge stripe in the stream colour; empty when the project has no stream. */
+function streamStripe(stream: string | null): CSSProperties {
+  const color = stream ? STREAM_COLOR[stream] : undefined;
+  return color ? { borderLeftColor: color, borderLeftWidth: '3px', borderLeftStyle: 'solid' } : {};
 }
 
 interface ProgrammeNode {
@@ -92,7 +114,7 @@ export function PortfolioMap({ projects }: Props) {
       <header className={styles.head}>
         <h2 className={styles.title}>Portfolio map</h2>
         <p className={styles.sub}>
-          Programmes sized by project count; tiles coloured by health. Click anything to drill in.
+          Programmes sized by project count; tiles coloured by health, edge-striped by stream. Click anything to drill in.
         </p>
       </header>
 
@@ -132,6 +154,14 @@ export function PortfolioMap({ projects }: Props) {
             {t}
           </span>
         ))}
+        <span className={styles.legendSep} aria-hidden>·</span>
+        <span className={styles.legendLabel}>Stream</span>
+        {STREAM_LEGEND.map((s) => (
+          <span key={s.id} className={styles.legendItem}>
+            <span className={styles.legendSwatch} style={{ background: STREAM_COLOR[s.id] }} />
+            {s.label}
+          </span>
+        ))}
       </footer>
     </section>
   );
@@ -141,6 +171,7 @@ export function PortfolioMap({ projects }: Props) {
 
 function ProgrammeColumn({ node, weight }: { node: ProgrammeNode; weight: number }) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
   const health = classifyByHealth(node.programme);
 
   return (
@@ -148,7 +179,8 @@ function ProgrammeColumn({ node, weight }: { node: ProgrammeNode; weight: number
       <button
         type="button"
         className={`${styles.programmeHeader} ${styles[`health_${health}`]}`}
-        onClick={() => navigate(`/programmes/${node.programme.id}`)}
+        style={streamStripe(node.programme.stream)}
+        onClick={() => navigate(projectPath(node.programme.id))}
         title={`Open programme: ${node.programme.name}`}
       >
         <span className={styles.programmeKicker}>Programme</span>
@@ -166,7 +198,8 @@ function ProgrammeColumn({ node, weight }: { node: ProgrammeNode; weight: number
               type="button"
               key={c.id}
               className={`${styles.childTile} ${styles[`health_${c.health}`]}`}
-              onClick={() => navigate(`/portfolio/${c.id}`)}
+              style={streamStripe(c.stream)}
+              onClick={() => navigate(projectPath(c.id))}
               title={`${c.name} — ${statusLabel(c.health)}`}
             >
               <span className={styles.childName}>{c.name}</span>
@@ -191,6 +224,7 @@ function PoolColumn({
   weight: number;
 }) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
   return (
     <div className={styles.column} style={{ flexGrow: weight }}>
       <div className={`${styles.programmeHeader} ${styles[`pool_${kind}`]}`}>
@@ -208,7 +242,8 @@ function PoolColumn({
             type="button"
             key={item.id}
             className={`${styles.childTile} ${styles[`health_${item.health}`]}`}
-            onClick={() => navigate(`/portfolio/${item.id}`)}
+            style={streamStripe(item.stream)}
+            onClick={() => navigate(projectPath(item.id))}
             title={`${item.name} — ${statusLabel(item.health)}`}
           >
             <span className={styles.childName}>{item.name}</span>

@@ -1,13 +1,16 @@
 /* ---------------------------------------------------------------
-   NextUp — ranked "work on this next" panel.
+   TodayMatrix — Eisenhower 2×2 (Urgent × Important).
    --------------------------------------------------------------- */
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-5) var(--sp-5);
-  box-shadow: var(--shadow-card);
+.wrap {
+  margin-bottom: var(--sp-5);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
 }
 
 .title {
@@ -17,14 +20,82 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--dio-navy);
-  margin: 0 0 var(--sp-3) 0;
+  margin: 0;
 }
 
-.empty {
+.sub {
+  font-size: 12px;
+  color: var(--dio-grey-soft);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+
+.cell {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  box-shadow: var(--shadow-card);
+  border-top: 3px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Quadrant accents — strongest on "Do now", quiet on "Park". */
+.cell_do_now {
+  border-top-color: var(--status-red);
+}
+.cell_schedule {
+  border-top-color: var(--dio-navy);
+}
+.cell_delegate {
+  border-top-color: var(--status-amber);
+}
+.cell_park {
+  border-top-color: var(--border);
+  background: var(--dio-cream-soft);
+}
+
+.cellHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.cellTitle {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dio-navy);
+}
+
+.cellBlurb {
+  font-size: 11px;
+  color: var(--dio-grey-soft);
+  flex: 1;
+}
+
+.cellCount {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dio-grey);
+  background: var(--border-soft);
+  padding: 1px 8px;
+  border-radius: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cellEmpty {
   font-size: 12px;
   color: var(--dio-grey-soft);
   font-style: italic;
-  padding: var(--sp-3) 0;
+  margin: var(--sp-2) 0;
 }
 
 .list {
@@ -40,7 +111,7 @@
   align-items: center;
   gap: var(--sp-3);
   width: 100%;
-  padding: 9px var(--sp-2);
+  padding: 8px var(--sp-2);
   background: none;
   border: none;
   border-bottom: 1px solid var(--border-soft);
@@ -56,7 +127,7 @@ li:last-child > .row {
 }
 
 .row:hover {
-  background: var(--dio-cream-soft);
+  background: var(--dio-cream);
 }
 
 .badge {
@@ -89,6 +160,13 @@ li:last-child > .row {
   color: var(--status-amber);
 }
 
+.badge_watch {
+  background: var(--status-amber-bg);
+  color: var(--status-amber);
+  outline: 1px dashed var(--status-amber);
+  outline-offset: -1px;
+}
+
 .badge_priority {
   background: var(--dio-blue-ghost);
   color: var(--dio-navy);
@@ -119,8 +197,14 @@ li:last-child > .row {
   text-overflow: ellipsis;
 }
 
-.arrow {
-  flex-shrink: 0;
+.more {
+  font-size: 11px;
   color: var(--dio-grey-soft);
-  font-size: 13px;
+  padding: 6px var(--sp-2) 0;
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

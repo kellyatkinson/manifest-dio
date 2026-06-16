@@ -324,6 +324,8 @@ export interface UpdateTaskInput {
   priority?: number | null;
   owner?: string | null;
   order_index?: number;
+  /** Move the task to a different project. */
+  project_id?: string;
   zendesk_tickets?: number[];
 }
 

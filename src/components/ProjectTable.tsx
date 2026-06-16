@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { dash, projectTypeLabel, sortableDateKey, statusSeverity } from '@/lib/format';
+import { useUrls } from '@/hooks/useUrls';
 import type { Project } from '@/lib/types';
 
 import { InferencePopover } from './InferencePopover';
@@ -48,6 +49,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
 
 export function ProjectTable({ projects }: Props) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
   const [sort, setSort] = useState<SortState>({ key: 'display_order', dir: 'asc' });
   const [popover, setPopover] = useState<{
     project: Project;
@@ -95,7 +97,7 @@ export function ProjectTable({ projects }: Props) {
           </thead>
           <tbody>
             {sorted.map((p) => (
-              <tr key={p.id} className={styles.row} onClick={() => navigate(`/portfolio/${p.id}`)}>
+              <tr key={p.id} className={styles.row} onClick={() => navigate(projectPath(p.id))}>
                 <td className={styles.numCell}>{p.display_order}</td>
                 <td className={styles.name}>{p.name}</td>
                 <td>

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import { StatusPill } from './StatusPill';
 import { projectTypeLabel } from '@/lib/format';
 import type { Project } from '@/lib/types';
@@ -28,6 +29,7 @@ function programmeColorIdx(name: string): number {
 
 export function ProjectCard({ project, parentName }: Props) {
   const navigate = useNavigate();
+  const { projectPath } = useUrls();
 
   const programmeTag = parentName !== undefined ? (
     parentName ? (
@@ -47,10 +49,10 @@ export function ProjectCard({ project, parentName }: Props) {
   return (
     <article
       className={`${styles.card} ${typeClass[project.project_type] ?? ''}`}
-      onClick={() => navigate(`/portfolio/${project.id}`)}
+      onClick={() => navigate(projectPath(project.id))}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && navigate(`/portfolio/${project.id}`)}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(projectPath(project.id))}
       aria-label={`Open ${projectTypeLabel(project.project_type).toLowerCase()}: ${project.name}`}
     >
       <div className={styles.header}>

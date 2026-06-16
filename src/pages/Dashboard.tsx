@@ -12,10 +12,10 @@
 import { Link } from 'react-router-dom';
 
 import { ActivityFeed } from '@/components/ActivityFeed';
-import { HealthDonut } from '@/components/HealthDonut';
+import { HealthBar } from '@/components/HealthBar';
 import { KpiStrip } from '@/components/KpiStrip';
-import { NextUp } from '@/components/NextUp';
 import { PortfolioMap } from '@/components/PortfolioMap';
+import { TodayMatrix } from '@/components/TodayMatrix';
 import { QuickLog } from '@/components/QuickLog';
 import { useRecentActivity } from '@/hooks/useActivity';
 import { useProjects } from '@/hooks/useProjects';
@@ -34,7 +34,7 @@ export function Dashboard() {
       <header className={styles.head}>
         <div className={styles.headIntro}>
           <h1 className={styles.title}>Overview</h1>
-          <p className={styles.sub}>Everything in flight, and what&apos;s next.</p>
+          <p className={styles.sub}>What&apos;s urgent, what&apos;s important, and everything in flight.</p>
         </div>
         <div className={styles.headActions}>
           <Link to="/portfolio/board" className={styles.detailLink}>
@@ -56,36 +56,35 @@ export function Dashboard() {
           {/* 1. KPI hero strip */}
           <KpiStrip projects={projects} tasks={tasks} />
 
-          {/* 2. Health donut + portfolio map */}
+          {/* 2. Today — Eisenhower urgent × important matrix (the new "next up") */}
+          <TodayMatrix projects={projects} tasks={tasks} />
+
+          {/* 3. Health bars + portfolio map */}
           <div className={styles.vizRow}>
-            <HealthDonut projects={projects} />
+            <HealthBar projects={projects} />
             <div className={styles.mapWrap}>
               <PortfolioMap projects={projects} />
             </div>
           </div>
 
-          {/* 3. Next up + recent activity */}
-          <div className={styles.lower}>
-            <NextUp projects={projects} tasks={tasks} />
-
-            <section className={styles.activitySection}>
-              <div className={styles.sectionHead}>
-                <h2 className={styles.sectionTitle}>Recent activity</h2>
-                <span className={styles.sectionCount}>{recent.length}</span>
+          {/* 4. Recent activity + quick log */}
+          <section className={styles.activitySection}>
+            <div className={styles.sectionHead}>
+              <h2 className={styles.sectionTitle}>Recent activity</h2>
+              <span className={styles.sectionCount}>{recent.length}</span>
+            </div>
+            <div className={styles.activityCard}>
+              <div className={styles.quickLogWrap}>
+                <QuickLog projectId={null} allowProjectSelect />
               </div>
-              <div className={styles.activityCard}>
-                <div className={styles.quickLogWrap}>
-                  <QuickLog projectId={null} allowProjectSelect />
-                </div>
-                <ActivityFeed
-                  entries={recent}
-                  limit={8}
-                  showProject
-                  emptyMessage="Nothing logged yet. Try the input above — discussions, decisions, small actions."
-                />
-              </div>
-            </section>
-          </div>
+              <ActivityFeed
+                entries={recent}
+                limit={8}
+                showProject
+                emptyMessage="Nothing logged yet. Try the input above — discussions, decisions, small actions."
+              />
+            </div>
+          </section>
         </>
       )}
     </div>

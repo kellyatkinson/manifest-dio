@@ -10,8 +10,8 @@
 // programme view read-focused.
 // ---------------------------------------------------------------
 
-import { useMemo } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ActivityFeed } from '@/components/ActivityFeed';
 import { HistoryFeed } from '@/components/HistoryFeed';
@@ -20,6 +20,7 @@ import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { useProject, useProjects } from '@/hooks/useProjects';
+import { useUrls } from '@/hooks/useUrls';
 import { useProjectsActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { formatDateTime, statusLabel } from '@/lib/format';
@@ -37,8 +38,11 @@ const STATE_LABEL: Record<string, string> = {
 const HEALTH_ORDER: HealthId[] = ['red', 'amber', 'green', 'placeholder'];
 
 export function ProgrammeDetail() {
-  const { programmeId } = useParams<{ programmeId: string }>();
+  const { programmeId: programmeParam } = useParams<{ programmeId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { resolveProject, projectPath, projectKey } = useUrls();
+  const programmeId = resolveProject(programmeParam);
 
   const { data: programme, isLoading, error } = useProject(programmeId);
   const { data: allProjects = [] } = useProjects('active');
@@ -65,12 +69,19 @@ export function ProgrammeDetail() {
   const needsAttention = healthMix.red + healthMix.amber;
   const total = children.length || 1;
 
+  // Normalise the address bar to the readable slug-hex form.
+  useEffect(() => {
+    if (!programme || programme.project_type !== 'programme') return;
+    const pretty = `/programmes/${projectKey(programme.id)}`;
+    if (location.pathname !== pretty) navigate(pretty, { replace: true });
+  }, [programme, location.pathname, projectKey, navigate]);
+
   if (isLoading) return <div className={styles.placeholder}>Loading programme…</div>;
   if (error) return <div className={styles.error}>Could not load programme: {(error as Error).message}</div>;
   if (!programme) return <div className={styles.placeholder}>Programme not found.</div>;
   if (programme.project_type !== 'programme') {
     // If someone routes here with a non-programme ID, redirect to the project view
-    navigate(`/portfolio/${programme.id}`, { replace: true });
+    navigate(projectPath(programme.id), { replace: true });
     return null;
   }
 
@@ -84,7 +95,7 @@ export function ProgrammeDetail() {
             <h1 className={styles.title}>{programme.name}</h1>
           </div>
           <div className={styles.heroActions}>
-            <Link to={`/portfolio/${programme.id}`} className={styles.btn}>
+            <Link to={`/portfolio/${projectKey(programme.id)}`} className={styles.btn}>
               Open / edit
             </Link>
             <div className={styles.stateChip} data-state={programme.status}>

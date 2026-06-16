@@ -18,6 +18,11 @@ export type HealthId = 'green' | 'amber' | 'red' | 'placeholder';
 export type ProjectStatusId = 'active' | 'on_hold' | 'archived' | 'excluded';
 export type ConfidenceId = 'high' | 'medium' | 'low';
 export type TaskStatusId = 'todo' | 'in_progress' | 'waiting' | 'hold' | 'done' | 'cancelled';
+/** role_tags / streams are text PKs in their reference tables; widened to
+ *  string so unknown ids don't break typing. Known role_tags include
+ *  'accountable' | 'consulted' | 'informed'. */
+export type RoleTagId = string;
+export type StreamId = string;
 
 // ---- Reference table rows -----------------------------------------------
 
@@ -47,6 +52,8 @@ export interface Project {
   logseq_page: string | null;
   parent_id: string | null;
   description: string | null;
+  stream: StreamId | null;
+  role_tag: RoleTagId | null;
 
   status: ProjectStatusId;
   status_reason: string | null;

@@ -20,12 +20,14 @@ import {
   type CreateDecisionInput,
 } from '@/lib/api';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { useUrls } from '@/hooks/useUrls';
 import { formatDate } from '@/lib/format';
 
 import styles from './Decisions.module.css';
 
 export function Decisions() {
   const qc = useQueryClient();
+  const { projectPath } = useUrls();
   const { data: decisions = [], isLoading, error } = useQuery({
     queryKey: ['decisions'],
     queryFn: listDecisions,
@@ -171,7 +173,7 @@ export function Decisions() {
               {d.decided_by && <span className={styles.by}>by {d.decided_by}</span>}
               <div className={styles.spacer} />
               {d.project_id && (
-                <Link to={`/portfolio/${d.project_id}`} className={styles.projectLink}>
+                <Link to={projectPath(d.project_id)} className={styles.projectLink}>
                   {projectNameById.get(d.project_id) ?? 'Project'}
                 </Link>
               )}

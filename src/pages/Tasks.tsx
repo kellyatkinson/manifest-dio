@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '@/hooks/useProjects';
 import { useAllTasks } from '@/hooks/useTasks';
+import { useUrls } from '@/hooks/useUrls';
 import { formatDate } from '@/lib/format';
 import type { Task, TaskStatusId } from '@/lib/types';
 
@@ -22,6 +23,7 @@ const PRIORITY_LABEL: Record<number, string> = { 1: 'P1', 2: 'P2', 3: 'P3', 4: '
 
 export function Tasks() {
   const navigate = useNavigate();
+  const { projectPath, taskPath } = useUrls();
   const { data: tasks = [], isLoading: tasksLoading } = useAllTasks();
   const { data: projects = [], isLoading: projectsLoading } = useProjects('active');
   const [statusFilter, setStatusFilter] = useState<TaskStatusId | 'open' | 'all'>('open');
@@ -104,7 +106,7 @@ export function Tasks() {
                 <tr
                   key={task.id}
                   className={`${styles.row} ${styles[`row_${task.status}`] ?? ''}`}
-                  onClick={() => navigate(`/portfolio/${task.project_id}/tasks/${task.id}`)}
+                  onClick={() => navigate(taskPath(task.project_id, task.id))}
                 >
                   <td className={styles.tdStatus}>
                     <span
@@ -123,7 +125,7 @@ export function Tasks() {
                         className={styles.projectLink}
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/portfolio/${task.project_id}`);
+                          navigate(projectPath(task.project_id));
                         }}
                       >
                         {project.name}

@@ -16,6 +16,7 @@ import { formatDate, sortableDateKey, taskStatusLabel } from '@/lib/format';
 import type { Task, TaskStatusId } from '@/lib/types';
 import { ZendeskTicketsChips } from './ZendeskTickets';
 import { useCreateTask, useSetTaskStatus } from '@/hooks/useTasks';
+import { useUrls } from '@/hooks/useUrls';
 
 import styles from './TaskList.module.css';
 
@@ -114,6 +115,7 @@ function sortTasks(tasks: Task[], key: SortKey): Task[] {
 
 export function TaskList({ projectId, tasks }: Props) {
   const navigate = useNavigate();
+  const { taskPath } = useUrls();
   const [newTitle, setNewTitle] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>(loadStoredSort);
   const createMut = useCreateTask(projectId);
@@ -163,7 +165,7 @@ export function TaskList({ projectId, tasks }: Props) {
       ) : (
         <div className={styles.list}>
           {sortedTasks.map((t) => (
-            <TaskRow key={t.id} task={t} projectId={projectId} today={today} onOpen={() => navigate(`/portfolio/${projectId}/tasks/${t.id}`)} />
+            <TaskRow key={t.id} task={t} projectId={projectId} today={today} onOpen={() => navigate(taskPath(projectId, t.id))} />
           ))}
         </div>
       )}

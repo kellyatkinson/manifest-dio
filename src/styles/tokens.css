@@ -20,6 +20,13 @@
   --type-project: #27aae1;       /* Projects = Junior High blue */
   --type-annual: #f7941d;        /* Annual cycles = Junior orange */
 
+  /* ---- Stream accents (categorical; portfolio-map edge stripe) --- */
+  /* Functional colour: identifies which stream a project sits in,
+     alongside health (fill). Drawn from the data palette below. */
+  --stream-operations: #10b981;  /* mint */
+  --stream-change:     #3b82f6;  /* blue */
+  --stream-governance: #7c3aed;  /* purple */
+
   /* ---- Accent colours ------------------------------------------- */
   --dio-red: #bf2f38;            /* Dio Red — use sparingly */
   --dio-gold: #c9a961;           /* Warm gold — inference/inferred flags */

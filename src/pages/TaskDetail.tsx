@@ -15,10 +15,14 @@
 // ---------------------------------------------------------------
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
 import { ZendeskTicketsInput } from '@/components/ZendeskTickets';
+import { useProjects } from '@/hooks/useProjects';
+import { useUrls } from '@/hooks/useUrls';
 import { useArchiveTask, useTask, useUpdateTask } from '@/hooks/useTasks';
 import { useTaskHistory } from '@/hooks/useHistory';
 import { taskStatusLabel } from '@/lib/format';
@@ -37,8 +41,17 @@ interface Props {
 export function TaskDetail({ taskId, projectId, onClose }: Props) {
   const { data: task, isLoading } = useTask(taskId);
   const { data: history = [] } = useTaskHistory(taskId);
+  const { data: projects = [] } = useProjects('active');
   const updateMut = useUpdateTask(taskId, projectId);
   const archiveMut = useArchiveTask(taskId, projectId);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { projectPath } = useUrls();
+
+  // Project options sorted by name; ensure the task's current project is
+  // always selectable even if it isn't in the active list.
+  const projectOptions = [...projects].sort((a, b) => a.name.localeCompare(b.name));
+  const currentInList = task ? projectOptions.some((p) => p.id === task.project_id) : true;
 
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [zendeskDraft, setZendeskDraft] = useState<number[]>([]);
@@ -52,6 +65,7 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
       title: task.title,
       description: task.description ?? '',
       status: task.status,
+      project_id: task.project_id,
       due_date: task.due_date ?? '',
       priority: task.priority?.toString() ?? '',
       owner: task.owner ?? '',
@@ -91,6 +105,8 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
     ) {
       payload.zendesk_tickets = zendeskDraft;
     }
+    const movedProject = Boolean(draft.project_id) && draft.project_id !== task.project_id;
+    if (movedProject) payload.project_id = draft.project_id;
 
     if (Object.keys(payload).length === 0) {
       onClose();
@@ -98,6 +114,14 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
     }
     try {
       await updateMut.mutateAsync({ payload });
+      if (movedProject) {
+        // The task now lives under a different project; the modal route's
+        // projectId is stale, so refresh every task cache and follow it home.
+        qc.invalidateQueries({ queryKey: ['tasks'] });
+        qc.invalidateQueries({ queryKey: ['task', taskId] });
+        navigate(projectPath(draft.project_id));
+        return;
+      }
       onClose();
     } catch (err) {
       window.alert(`Save failed: ${err instanceof Error ? err.message : 'unknown error'}`);
@@ -153,6 +177,23 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>
                       {taskStatusLabel(s)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Project">
+                <select
+                  value={draft.project_id ?? ''}
+                  onChange={(e) => setField('project_id', e.target.value)}
+                  className={styles.input}
+                  title="Move this task to a different project"
+                >
+                  {!currentInList && draft.project_id && (
+                    <option value={draft.project_id}>Current project</option>
+                  )}
+                  {projectOptions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
                     </option>
                   ))}
                 </select>

@@ -9,6 +9,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useUrls } from '@/hooks/useUrls';
 import type { Project, Task } from '@/lib/types';
 
 import styles from './WeekRail.module.css';
@@ -37,6 +38,7 @@ function parseDeadline(deadline: string | null): Date | null {
 }
 
 export function WeekRail({ projects, tasks }: Props) {
+  const { projectPath, taskPath } = useUrls();
   const entries = useMemo<Entry[]>(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -58,7 +60,7 @@ export function WeekRail({ projects, tasks }: Props) {
         id: t.id,
         title: t.title,
         dueDate: due,
-        link: project ? `/portfolio/${t.project_id}/tasks/${t.id}` : `/tasks`,
+        link: project ? taskPath(t.project_id, t.id) : `/tasks`,
         context: project?.name ?? 'Unknown project',
       });
     }
@@ -73,14 +75,14 @@ export function WeekRail({ projects, tasks }: Props) {
         id: p.id,
         title: p.name,
         dueDate: due,
-        link: `/portfolio/${p.id}`,
+        link: projectPath(p.id),
         context: 'Project deadline',
       });
     }
 
     out.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
     return out;
-  }, [projects, tasks]);
+  }, [projects, tasks, projectPath, taskPath]);
 
   if (entries.length === 0) return null;
 

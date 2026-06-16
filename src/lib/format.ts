@@ -125,6 +125,8 @@ export function humaniseFieldName(field: string): string {
       return 'Notes (Logseq)';
     case 'parent_id':
       return 'Parent programme';
+    case 'project_id':
+      return 'Project';
     case 'project_type':
       return 'Project type';
     case 'health_inferred':

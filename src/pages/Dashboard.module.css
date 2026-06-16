@@ -97,7 +97,7 @@
   display: grid;
   grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
   gap: var(--sp-4);
-  align-items: stretch;
+  align-items: start;
   margin-bottom: var(--sp-5);
 }
 
