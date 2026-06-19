@@ -7,6 +7,7 @@ import { useTask } from '@/hooks/useTasks';
 import { useUrls } from '@/hooks/useUrls';
 
 import { ManifestIcon } from './icons/ManifestIcon';
+import { GlobalSearch } from './GlobalSearch';
 import styles from './Header.module.css';
 
 interface Crumb {
@@ -97,6 +98,8 @@ export function Header({ onMenuClick, drawerOpen = false }: HeaderProps = {}) {
           );
         })}
       </div>
+
+      <GlobalSearch />
 
       <div className={styles.user}>
         {user?.email && <span className={styles.userEmail}>{user.email}</span>}

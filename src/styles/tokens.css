@@ -36,8 +36,8 @@
   /* v2 (2026-05-28): switched from cool blue-tinted cream to a true
      off-white so data colours pop. The old `--dio-cream` token name
      is kept for backwards compatibility — value is now off-white. */
-  --dio-cream: #f8f8f9;          /* Page background — true off-white */
-  --dio-cream-soft: #fcfcfd;     /* Slightly lighter — alternate bg */
+  --dio-cream: #ffffff;          /* Page background — white (v3 2026-06-19) */
+  --dio-cream-soft: #f6f7f9;     /* Faint grey — table striping / subtle panels */
   --dio-light: #ffffff;
   --surface: #ffffff;
   --surface-hover: #f3f4f6;
@@ -97,9 +97,9 @@
   /* v2: Inter is the default for data-dense UI (tables, KPI numbers,
      metadata, body). Montserrat is reserved for branded surfaces
      via --font-brand (sidebar title, hero h1s). */
-  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-brand: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-data:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:  'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-brand: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-data:  'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-serif: Georgia, 'Times New Roman', serif;
   --font-mono:  'Consolas', 'Monaco', 'Courier New', monospace;
 
