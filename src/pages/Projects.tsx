@@ -1,39 +1,34 @@
 import { useMemo, useState } from 'react';
 
 import { CreateProjectModal } from '@/components/CreateProjectModal';
-import { ProjectCard } from '@/components/ProjectCard';
+import { ProjectTable } from '@/components/ProjectTable';
 import { useProjects } from '@/hooks/useProjects';
-import type { ProjectStatusId } from '@/lib/types';
+import type { HealthId } from '@/lib/types';
 
 import styles from './Projects.module.css';
 
 export function Projects() {
   const { data: projects = [], isLoading, error } = useProjects('active');
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<ProjectStatusId | ''>('');
+  const [health, setHealth] = useState<HealthId | ''>('');
   const [showCreate, setShowCreate] = useState(false);
 
   const projectItems = projects.filter((p) => p.project_type === 'project');
   const programmes = projects.filter((p) => p.project_type === 'programme');
 
-  // id → name map for resolving parent programme labels on cards
-  const programmeNameById = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const p of programmes) map.set(p.id, p.name);
-    return map;
-  }, [programmes]);
-
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     return projectItems.filter((p) => {
-      if (status && p.status !== status) return false;
+      if (health && p.health !== health) return false;
       if (term) {
-        const hay = [p.name, p.owner ?? '', p.deadline ?? ''].join(' ').toLowerCase();
+        const hay = [p.name, p.owner ?? '', p.deadline ?? '', p.next_decision ?? '']
+          .join(' ')
+          .toLowerCase();
         if (!hay.includes(term)) return false;
       }
       return true;
     });
-  }, [projectItems, search, status]);
+  }, [projectItems, search, health]);
 
   return (
     <div>
@@ -41,7 +36,7 @@ export function Projects() {
         <div className={styles.headRow}>
           <div>
             <h1 className={styles.title}>Projects</h1>
-            <p className={styles.sub}>All active projects across the portfolio.</p>
+            <p className={styles.sub}>All active projects — sort any column, or filter below.</p>
           </div>
           <button type="button" className={styles.createBtn} onClick={() => setShowCreate(true)}>
             + New project
@@ -58,10 +53,10 @@ export function Projects() {
         />
         <select
           className={styles.select}
-          value={status}
-          onChange={(e) => setStatus(e.target.value as ProjectStatusId | '')}
+          value={health}
+          onChange={(e) => setHealth(e.target.value as HealthId | '')}
         >
-          <option value="">All statuses</option>
+          <option value="">All health</option>
           <option value="green">Green</option>
           <option value="amber">Amber</option>
           <option value="red">Red</option>
@@ -70,27 +65,9 @@ export function Projects() {
       </div>
 
       {isLoading && <div className={styles.note}>Loading…</div>}
-      {error && (
-        <div className={styles.error}>Could not load: {(error as Error).message}</div>
-      )}
+      {error && <div className={styles.error}>Could not load: {(error as Error).message}</div>}
 
-      {!isLoading && !error && (
-        filtered.length === 0 ? (
-          <div className={styles.empty}>Nothing matches. Try clearing the search?</div>
-        ) : (
-          <div className={styles.grid}>
-            {filtered.map((p) => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                parentName={p.parent_id
-                  ? (programmeNameById.get(p.parent_id) ?? 'Programme')
-                  : ''}
-              />
-            ))}
-          </div>
-        )
-      )}
+      {!isLoading && !error && <ProjectTable projects={filtered} />}
 
       {!isLoading && !error && projectItems.length > 0 && (
         <div className={styles.foot}>
@@ -100,10 +77,7 @@ export function Projects() {
       )}
 
       {showCreate && (
-        <CreateProjectModal
-          programmes={programmes}
-          onClose={() => setShowCreate(false)}
-        />
+        <CreateProjectModal programmes={programmes} onClose={() => setShowCreate(false)} />
       )}
     </div>
   );

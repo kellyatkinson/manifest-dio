@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   adminArchiveProject,
   adminConfirmInference,
+  adminDeleteProject,
   adminCreateProject,
   adminHideProject,
   adminHoldProject,
@@ -112,6 +113,14 @@ export function useHoldProject(projectId: string) {
   return useMutation({
     mutationFn: (reason?: string) => adminHoldProject(projectId, reason),
     onSuccess: () => invalidateAllProjects(qc, projectId),
+  });
+}
+
+export function useDeleteProject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (projectId: string) => adminDeleteProject(projectId),
+    onSuccess: () => invalidateAllProjects(qc),
   });
 }
 

@@ -1,0 +1,130 @@
+.head {
+  margin-bottom: var(--sp-4);
+}
+.title {
+  font-family: var(--font-brand);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--dio-navy);
+  margin: 0;
+}
+.sub {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--dio-grey);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  font-size: var(--text-xs);
+  color: var(--dio-grey);
+}
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sp-4);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--dio-grey-soft);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+.cardTitle,
+.cardTitleBtn {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--dio-navy);
+  line-height: 1.25;
+  text-align: left;
+}
+.cardTitleBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+.cardTitleBtn:hover {
+  text-decoration: underline;
+}
+.count {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  color: var(--dio-grey-soft);
+  flex: 0 0 auto;
+}
+
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.dotBtn {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+.dotBtn:hover {
+  transform: scale(1.25);
+}
+.dot_green {
+  background: var(--status-green);
+}
+.dot_amber {
+  background: var(--status-amber);
+}
+.dot_red {
+  background: var(--status-red);
+}
+.dot_placeholder {
+  background: var(--status-placeholder);
+}
+
+.cardEmpty {
+  font-size: var(--text-xs);
+  color: var(--dio-grey-soft);
+  font-style: italic;
+}
+
+.note,
+.empty,
+.error {
+  padding: var(--sp-5);
+  font-size: var(--text-sm);
+  color: var(--dio-grey);
+}
+.error {
+  color: var(--status-red);
+}

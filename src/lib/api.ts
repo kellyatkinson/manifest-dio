@@ -270,6 +270,10 @@ export function adminRestoreProject(projectId: string, reason?: string) {
   return callRpc('admin_restore_project', { p_project_id: projectId, p_reason: reason ?? null });
 }
 
+export function adminDeleteProject(projectId: string) {
+  return callRpc('admin_delete_project', { p_project_id: projectId });
+}
+
 // ---- Decisions ----
 
 export interface CreateDecisionInput {

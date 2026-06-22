@@ -25,7 +25,7 @@ import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
 import { TaskList } from '@/components/TaskList';
 import { ZendeskTicketsChips, ZendeskTicketsInput } from '@/components/ZendeskTickets';
-import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useHoldProject, useRestoreProject } from '@/hooks/useProjects';
+import { useProject, useProjects, useUpdateProject, useArchiveProject, useHideProject, useHoldProject, useRestoreProject, useDeleteProject } from '@/hooks/useProjects';
 import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
@@ -68,12 +68,14 @@ export function ProjectDetail() {
   const hideMut = useHideProject(projectId ?? '');
   const holdMut = useHoldProject(projectId ?? '');
   const restoreMut = useRestoreProject(projectId ?? '');
+  const deleteMut = useDeleteProject();
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [zendeskDraft, setZendeskDraft] = useState<number[]>([]);
   const [stateAction, setStateAction] = useState<{ next: ProjectStatusId; label: string } | null>(null);
   const [stateReason, setStateReason] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [popover, setPopover] = useState<{
     field: 'health' | 'owner';
     anchor: { x: number; y: number };
@@ -203,6 +205,16 @@ export function ProjectDetail() {
                 </option>
               ))}
             </select>
+            {!editing && (
+              <button
+                type="button"
+                className={styles.btn}
+                style={{ color: 'var(--status-red)', borderColor: 'var(--status-red)' }}
+                onClick={() => setConfirmDelete(true)}
+              >
+                Delete
+              </button>
+            )}
           </div>
         </div>
 
@@ -569,6 +581,28 @@ export function ProjectDetail() {
         }}
         onConfirm={() => {
           void performStateChange();
+        }}
+      />
+
+      {/* ---- Delete confirm dialog ---- */}
+      <ConfirmDialog
+        open={confirmDelete}
+        title={`Delete "${project.name}"?`}
+        body={
+          <p style={{ marginBottom: 'var(--sp-2)' }}>
+            This permanently removes the project and its tasks, activity and history. Decisions and
+            any sub-projects are kept but unlinked. This can't be undone.
+          </p>
+        }
+        confirmLabel="Delete"
+        destructive
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => {
+          const id = project.id;
+          void deleteMut.mutateAsync(id).then(() => {
+            setConfirmDelete(false);
+            navigate('/projects');
+          });
         }}
       />
 

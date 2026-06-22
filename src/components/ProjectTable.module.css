@@ -96,3 +96,12 @@
   color: var(--dio-grey);
   font-style: italic;
 }
+
+.programmeCell {
+  color: var(--dio-grey);
+  font-size: var(--text-sm);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

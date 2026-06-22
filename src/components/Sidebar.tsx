@@ -11,6 +11,7 @@ interface NavItem {
 
 const PRIMARY: NavItem[] = [
   { to: '/portfolio', label: 'Overview', end: false },
+  { to: '/portfolios', label: 'Portfolios' },
   { to: '/programmes', label: 'Programmes' },
   { to: '/projects', label: 'Projects' },
   { to: '/tasks', label: 'Tasks' },

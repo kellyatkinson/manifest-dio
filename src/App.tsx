@@ -28,6 +28,7 @@ import { Decisions } from './pages/Decisions';
 import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
 import { Portfolio } from './pages/Portfolio';
+import { Portfolios } from './pages/Portfolios';
 import { Programmes } from './pages/Programmes';
 import { ProgrammeDetail } from './pages/ProgrammeDetail';
 import { Projects } from './pages/Projects';
@@ -59,6 +60,7 @@ export function App() {
           >
             <Route index element={<Navigate to="/portfolio" replace />} />
             <Route path="/portfolio" element={<Dashboard />} />
+            <Route path="/portfolios" element={<Portfolios />} />
             <Route path="/portfolio/board" element={<Portfolio mode="active" view="board" />} />
             <Route path="/portfolio/map" element={<Portfolio mode="active" view="map" />} />
             <Route path="/portfolio/table" element={<Portfolio mode="active" view="table" />} />

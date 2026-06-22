@@ -21,6 +21,7 @@ type SortKey =
   | 'display_order'
   | 'name'
   | 'project_type'
+  | 'programme'
   | 'owner'
   | 'status'
   | 'next_decision'
@@ -40,6 +41,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
   { key: 'display_order', label: '#' },
   { key: 'name', label: 'Name' },
   { key: 'project_type', label: 'Type' },
+  { key: 'programme', label: 'Programme' },
   { key: 'owner', label: 'Owner' },
   { key: 'status', label: 'Health' },
   { key: 'next_decision', label: 'Next decision' },
@@ -49,7 +51,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
 
 export function ProjectTable({ projects }: Props) {
   const navigate = useNavigate();
-  const { projectPath } = useUrls();
+  const { projectPath, projectName } = useUrls();
   const [sort, setSort] = useState<SortState>({ key: 'display_order', dir: 'asc' });
   const [popover, setPopover] = useState<{
     project: Project;
@@ -59,10 +61,10 @@ export function ProjectTable({ projects }: Props) {
 
   const sorted = useMemo(() => {
     const copy = [...projects];
-    copy.sort((a, b) => cmp(a, b, sort.key));
+    copy.sort((a, b) => cmp(a, b, sort.key, projectName));
     if (sort.dir === 'desc') copy.reverse();
     return copy;
-  }, [projects, sort]);
+  }, [projects, sort, projectName]);
 
   function handleHeader(key: SortKey) {
     setSort((prev) => {
@@ -113,6 +115,7 @@ export function ProjectTable({ projects }: Props) {
                     {projectTypeLabel(p.project_type)}
                   </span>
                 </td>
+                <td className={styles.programmeCell}>{p.parent_id ? (projectName(p.parent_id) ?? '—') : '—'}</td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <OwnerCell
                     owner={p.owner}
@@ -172,7 +175,12 @@ export function ProjectTable({ projects }: Props) {
 
 // ---------------- comparators ----------------
 
-function cmp(a: Project, b: Project, key: SortKey): number {
+function cmp(
+  a: Project,
+  b: Project,
+  key: SortKey,
+  projectName: (id: string | null | undefined) => string | undefined,
+): number {
   switch (key) {
     case 'display_order':
       return a.display_order - b.display_order;
@@ -180,6 +188,15 @@ function cmp(a: Project, b: Project, key: SortKey): number {
       return a.name.localeCompare(b.name, 'en-NZ');
     case 'project_type':
       return a.project_type.localeCompare(b.project_type);
+    case 'programme': {
+      const an = a.parent_id ? (projectName(a.parent_id) ?? '') : '';
+      const bn = b.parent_id ? (projectName(b.parent_id) ?? '') : '';
+      // Empty (standalone) floats to the end on ascending sort.
+      if (!an && !bn) return 0;
+      if (!an) return 1;
+      if (!bn) return -1;
+      return an.localeCompare(bn, 'en-NZ');
+    }
     case 'owner':
       return (a.owner ?? '').localeCompare(b.owner ?? '', 'en-NZ');
     case 'status':
