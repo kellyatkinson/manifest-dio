@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { listWins } from '@/lib/api';
 
-export type WinsWindow = 7 | 30 | 90 | 'all';
+export type WinsWindow = 14 | 30 | 90 | 'all';
 
 export function useWins(window: WinsWindow) {
   const sinceIso =

@@ -17,7 +17,7 @@ import { statusLabel } from '@/lib/format';
 import styles from './Wins.module.css';
 
 const WINDOWS: { value: WinsWindow; label: string }[] = [
-  { value: 7, label: '7 days' },
+  { value: 14, label: '14 days' },
   { value: 30, label: '30 days' },
   { value: 90, label: '90 days' },
   { value: 'all', label: 'All time' },
