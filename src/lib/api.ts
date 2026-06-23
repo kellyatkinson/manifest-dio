@@ -461,3 +461,52 @@ export async function isAdmin(email: string | null | undefined): Promise<boolean
   }
   return Boolean(data);
 }
+
+// =========================================================================
+// Wins (completed/achieved items since a date) -- list_wins RPC
+// =========================================================================
+
+export interface WinTask {
+  id: string;
+  title: string;
+  completed_at: string;
+  project_id: string | null;
+  project_name: string | null;
+  owner: string | null;
+  zendesk_tickets: number[];
+}
+
+export interface WinProject {
+  id: string;
+  name: string;
+  project_type: ProjectTypeId;
+  completed_at: string;
+  owner: string | null;
+  health: HealthId;
+  zendesk_tickets: number[];
+  status_reason: string | null;
+}
+
+export interface WinDecision {
+  id: string;
+  question: string;
+  resolution: string;
+  decided_on: string;
+  decided_by: string | null;
+  project_id: string | null;
+  project_name: string | null;
+}
+
+export interface WinsResult {
+  tasks: WinTask[];
+  projects: WinProject[];
+  decisions: WinDecision[];
+}
+
+/** Completed tasks, closed projects and resolved decisions since `sinceIso`. */
+export async function listWins(sinceIso: string): Promise<WinsResult> {
+  const { data, error } = await supabase.rpc('list_wins', { p_since: sinceIso });
+  if (error) throw new Error(`[list_wins] ${error.message}`);
+  const r = (data ?? {}) as Partial<WinsResult>;
+  return { tasks: r.tasks ?? [], projects: r.projects ?? [], decisions: r.decisions ?? [] };
+}

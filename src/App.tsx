@@ -29,6 +29,7 @@ import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
 import { Portfolio } from './pages/Portfolio';
 import { Portfolios } from './pages/Portfolios';
+import { Wins } from './pages/Wins';
 import { Programmes } from './pages/Programmes';
 import { ProgrammeDetail } from './pages/ProgrammeDetail';
 import { Projects } from './pages/Projects';
@@ -70,6 +71,7 @@ export function App() {
             <Route path="/programmes/:programmeId" element={<ProgrammeDetail />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/wins" element={<Wins />} />
             <Route path="/closed" element={<Portfolio mode="archived" view="table" />} />
             <Route path="/decisions" element={<Decisions />} />
           </Route>
