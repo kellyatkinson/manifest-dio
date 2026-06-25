@@ -14,7 +14,7 @@
 // ---------------------------------------------------------------
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ActivityFeed } from '@/components/ActivityFeed';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -664,6 +664,22 @@ function Muted() {
 // so the most recent activity is visible without expanding the full history.
 
 function RecentlyRail({ history }: { history: ProjectHistoryRow[] }) {
+  const { projectPath, projectName } = useUrls();
+
+  function renderValue(field: string, value: string | null) {
+    if ((field === 'project_id' || field === 'parent_id') && value) {
+      const name = projectName(value);
+      if (name) {
+        return (
+          <Link to={projectPath(value)} className={styles.recentlyLink}>
+            {name}
+          </Link>
+        );
+      }
+    }
+    return humaniseFieldValue(field, value);
+  }
+
   const groups = useMemo(() => {
     const map = new Map<string, ProjectHistoryRow[]>();
     for (const r of history) {
@@ -696,7 +712,7 @@ function RecentlyRail({ history }: { history: ProjectHistoryRow[] }) {
                 </span>
                 <span className={styles.recentlyArrow}> → </span>
                 <span className={styles.recentlyValue}>
-                  {humaniseFieldValue(g.rows[0].field_name, g.rows[0].new_value)}
+                  {renderValue(g.rows[0].field_name, g.rows[0].new_value)}
                 </span>
               </>
             ) : (

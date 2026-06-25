@@ -534,3 +534,12 @@ textarea.input {
     grid-template-columns: 1fr;
   }
 }
+
+.recentlyLink {
+  color: var(--dio-navy);
+  font-weight: 600;
+  text-decoration: none;
+}
+.recentlyLink:hover {
+  text-decoration: underline;
+}
