@@ -32,6 +32,7 @@ import { Portfolios } from './pages/Portfolios';
 import { Wins } from './pages/Wins';
 import { Programmes } from './pages/Programmes';
 import { ProgrammeDetail } from './pages/ProgrammeDetail';
+import { Para } from './pages/Para';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Tasks } from './pages/Tasks';
@@ -70,6 +71,7 @@ export function App() {
             <Route path="/programmes" element={<Programmes />} />
             <Route path="/programmes/:programmeId" element={<ProgrammeDetail />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/para" element={<Para />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/wins" element={<Wins />} />
             <Route path="/closed" element={<Portfolio mode="archived" view="table" />} />

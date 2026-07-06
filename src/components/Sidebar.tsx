@@ -14,6 +14,7 @@ const PRIMARY: NavItem[] = [
   { to: '/portfolios', label: 'Portfolios' },
   { to: '/programmes', label: 'Programmes' },
   { to: '/projects', label: 'Projects' },
+  { to: '/para', label: 'PARA' },
   { to: '/tasks', label: 'Tasks' },
   { to: '/wins', label: 'Wins' },
 ];
