@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------
-// Portfolios — one-glance visual map of the whole portfolio.
+// Portfolios — one card per portfolio.
 //
-// Grouped by programme (the dimension that's actually populated),
-// each programme gets its own stable accent colour so the page
-// reads as distinct, colour-coded blocks rather than a wall of
-// repeated health colours. Health is demoted to a small dot on
-// each project; the variety comes from structure, not RAG.
+// A portfolio is a top-level programme: a programme with no parent.
+// Programmes that sit inside one are not portfolios; they appear on
+// the Programmes page, and their projects roll up into the portfolio
+// card here. Each portfolio gets a stable accent colour, and every
+// live row below it shows as a health dot.
 // ---------------------------------------------------------------
 
 import { useMemo } from 'react';
@@ -42,7 +42,6 @@ export function Portfolios() {
   const navigate = useNavigate();
 
   const groups = useMemo<Group[]>(() => {
-    const programmes = projects.filter((p) => p.project_type === 'programme');
     const childrenByParent = new Map<string, Project[]>();
     for (const p of projects) {
       if (p.parent_id) {
@@ -52,41 +51,46 @@ export function Portfolios() {
       }
     }
 
-    const out: Group[] = [];
+    // Everything below a row, at any depth. Guarded against a bad
+    // parent_id loop, which the database does not prevent.
+    const descendants = (id: string): Project[] => {
+      const out: Project[] = [];
+      const seen = new Set<string>([id]);
+      const walk = (parent: string) => {
+        for (const child of childrenByParent.get(parent) ?? []) {
+          if (seen.has(child.id)) continue;
+          seen.add(child.id);
+          out.push(child);
+          walk(child.id);
+        }
+      };
+      walk(id);
+      return out;
+    };
 
-    const sortedProgrammes = [...programmes].sort(
-      (a, b) =>
-        (childrenByParent.get(b.id)?.length ?? 0) - (childrenByParent.get(a.id)?.length ?? 0),
-    );
-    for (const prog of sortedProgrammes) {
-      out.push({
-        key: prog.id,
-        title: prog.name,
-        accent: accentFor(prog.id),
-        programme: prog,
-        items: sortItems(childrenByParent.get(prog.id) ?? []),
-      });
-    }
+    const portfolios = projects.filter((p) => p.project_type === 'programme' && !p.parent_id);
 
-    const standalone = projects.filter((p) => p.project_type === 'project' && !p.parent_id);
-    if (standalone.length) {
+    const out: Group[] = portfolios
+      .map((pf) => ({
+        key: pf.id,
+        title: pf.name,
+        accent: accentFor(pf.id),
+        programme: pf,
+        items: sortItems(descendants(pf.id)),
+      }))
+      .sort((a, b) => b.items.length - a.items.length || a.title.localeCompare(b.title, 'en-NZ'));
+
+    // Nothing should sit outside a portfolio, but never hide a row.
+    const filed = new Set<string>(portfolios.map((p) => p.id));
+    for (const g of out) for (const item of g.items) filed.add(item.id);
+    const unfiled = projects.filter((p) => !filed.has(p.id));
+    if (unfiled.length) {
       out.push({
-        key: '__standalone',
-        title: 'Standalone projects',
-        accent: '#888780',
+        key: '__unfiled',
+        title: 'Not in a portfolio yet',
+        accent: '#B0761A',
         programme: null,
-        items: sortItems(standalone),
-      });
-    }
-
-    const operational = projects.filter((p) => p.project_type === 'operational');
-    if (operational.length) {
-      out.push({
-        key: '__operational',
-        title: 'Operational',
-        accent: '#5F5E5A',
-        programme: null,
-        items: sortItems(operational),
+        items: sortItems(unfiled),
       });
     }
 
@@ -97,7 +101,7 @@ export function Portfolios() {
     <div>
       <header className={styles.head}>
         <h1 className={styles.title}>Portfolios</h1>
-        <p className={styles.sub}>The whole portfolio at a glance — by programme, coloured to tell them apart.</p>
+        <p className={styles.sub}>Every live row grouped by the portfolio it sits in. The colour tells the portfolios apart; each dot is one project’s health.</p>
       </header>
 
       <div className={styles.legend} aria-hidden>
@@ -137,7 +141,7 @@ export function Portfolios() {
                 </div>
 
                 {g.items.length === 0 ? (
-                  <div className={styles.cardEmpty}>No projects yet</div>
+                  <div className={styles.cardEmpty}>Nothing in this portfolio yet</div>
                 ) : (
                   <div className={styles.dots}>
                     {g.items.map((p) => (

@@ -44,3 +44,16 @@
   color: var(--dio-grey-soft);
   text-align: right;
 }
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parent {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint, #8a969c);
+}
