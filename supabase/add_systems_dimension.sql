@@ -1,0 +1,20 @@
+-- Applied 7 Sept 2026.
+--
+-- Systems as a cross-cutting label on a project rather than a level in
+-- the tree: Schoolbox work sits in several portfolios at once, and the
+-- SIS replacement touches both Synergetic and Veracross, so a row can
+-- carry more than one. Follows the existing zendesk_tickets pattern.
+--
+-- Adds:
+--   projects.systems text[]        the labels
+--   projects_systems_gin           index for "everything touching X"
+--   _parse_systems(jsonb)          trim / de-dupe / length guard
+--   admin_set_systems(...)         admin-only write with history, in the
+--                                  shape of admin_set_stream
+--   v_systems_in_use               the vocabulary actually in use
+--
+-- admin_update_project was deliberately NOT modified: a dedicated setter
+-- keeps the main write path untouched.
+--
+-- The live definitions are in the database; this file is the record of
+-- what was applied. See the migration named add_systems_dimension.

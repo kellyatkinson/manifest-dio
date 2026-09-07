@@ -34,6 +34,7 @@ import { Programmes } from './pages/Programmes';
 import { ProgrammeDetail } from './pages/ProgrammeDetail';
 import { Para } from './pages/Para';
 import { Projects } from './pages/Projects';
+import { Streams } from './pages/Streams';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Tasks } from './pages/Tasks';
 
@@ -71,6 +72,7 @@ export function App() {
             <Route path="/programmes" element={<Programmes />} />
             <Route path="/programmes/:programmeId" element={<ProgrammeDetail />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/streams" element={<Streams />} />
             <Route path="/para" element={<Para />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/wins" element={<Wins />} />

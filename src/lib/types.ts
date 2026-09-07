@@ -69,6 +69,10 @@ export interface Project {
 
   zendesk_tickets: number[];
 
+  /** Systems this row touches. Cross-cutting: a row can carry several,
+   *  which is why it is a label and not a level in the tree. */
+  systems: string[];
+
   created_at: string;
   created_by_email: string | null;
   updated_at: string;
