@@ -1,0 +1,17 @@
+# Store every text file with LF in the repository, and check it out with
+# LF, so a Windows editor saving CRLF no longer shows the whole file as
+# changed. Without this, 43 untouched files were appearing in every diff.
+* text=auto eol=lf
+
+# Binaries git must never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
