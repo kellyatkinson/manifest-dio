@@ -1,5 +1,5 @@
 .head {
-  margin-bottom: var(--sp-4);
+  margin-bottom: var(--sp-3);
 }
 .title {
   font-family: var(--font-brand);
@@ -12,6 +12,7 @@
   margin: var(--sp-1) 0 0;
   font-size: var(--text-sm);
   color: var(--dio-grey);
+  max-width: 62ch;
 }
 
 .legend {
@@ -28,76 +29,148 @@
   gap: 6px;
 }
 
+/* ---- Grid: three tiles across, two on narrower, one on mobile ---- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--sp-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+}
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.card {
+/* ---- Tile: the whole card is the link into the portfolio -------- */
+.tile {
+  --accent: var(--dio-navy);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-height: 230px;
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--dio-grey-soft);
-  border-radius: var(--radius-md);
-  padding: var(--sp-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow 0.14s ease,
+    border-color 0.14s ease,
+    transform 0.14s ease;
+}
+.tile:hover,
+.tile:focus-visible {
+  text-decoration: none;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lifted);
+  transform: translateY(-2px);
+}
+.tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.tileStatic {
+  cursor: default;
+}
+.tileStatic:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 
-.cardHead {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-3);
+/* Accent band across the top — the portfolio's fixed identity. */
+.accentBar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--accent);
 }
-.swatch {
-  width: 11px;
-  height: 11px;
-  border-radius: 3px;
-  flex: 0 0 auto;
+
+.tileHead {
+  display: block;
 }
-.cardTitle,
-.cardTitleBtn {
-  font-size: var(--text-base);
+.name {
+  font-family: var(--font-brand);
+  font-size: var(--text-xl);
   font-weight: 600;
-  color: var(--dio-navy);
   line-height: 1.25;
-  text-align: left;
-}
-.cardTitleBtn {
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
-.cardTitleBtn:hover {
-  text-decoration: underline;
-}
-.count {
-  margin-left: auto;
-  font-size: var(--text-xs);
-  color: var(--dio-grey-soft);
-  flex: 0 0 auto;
+  color: var(--dio-navy);
+  display: block;
 }
 
-.dots {
+/* ---- Live row count ------------------------------------------- */
+.metricRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.metric {
+  font-family: var(--font-brand);
+  font-size: var(--text-metric);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+}
+.metricLabel {
+  font-size: var(--text-sm);
+  color: var(--dio-grey-soft);
+}
+
+/* ---- Health split -------------------------------------------- */
+.bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--dio-cream-soft);
+}
+.seg {
+  display: block;
+  flex-basis: 0;
+  min-width: 4px;
+}
+.seg_green {
+  background: var(--status-green);
+}
+.seg_amber {
+  background: var(--status-amber);
+}
+.seg_red {
+  background: var(--status-red);
+}
+.seg_placeholder {
+  background: var(--status-placeholder);
+}
+
+.tally {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: var(--sp-1) var(--sp-3);
+  font-size: var(--text-xs);
+  color: var(--dio-grey);
 }
+.tallyItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .dot {
-  width: 14px;
-  height: 14px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
   flex: 0 0 auto;
-}
-.dotBtn {
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.08s ease;
-}
-.dotBtn:hover {
-  transform: scale(1.25);
 }
 .dot_green {
   background: var(--status-green);
@@ -112,10 +185,43 @@
   background: var(--status-placeholder);
 }
 
-.cardEmpty {
+/* ---- What is inside the portfolio ---------------------------- */
+/* Clamped so a portfolio with long project names cannot stretch the
+   whole row of tiles. */
+.inside {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--dio-grey);
+  border-top: 1px solid var(--border-soft);
+  padding-top: var(--sp-3);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.insideMore {
+  color: var(--dio-grey-soft);
+}
+
+.tileEmpty {
   font-size: var(--text-xs);
   color: var(--dio-grey-soft);
   font-style: italic;
+}
+
+/* ---- Footer affordance, pinned to the bottom of the tile ----- */
+/* Navy rather than the accent: the accent band and the metric carry
+   the portfolio's identity, and keeping this neutral leaves the
+   status colours to mean status. */
+.open {
+  margin-top: auto;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--dio-navy);
+}
+.tile:hover .open,
+.tile:focus-visible .open {
+  text-decoration: underline;
 }
 
 .note,

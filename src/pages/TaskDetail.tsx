@@ -15,14 +15,13 @@
 // ---------------------------------------------------------------
 
 import { useEffect, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
+import { ProjectPicker } from '@/components/ProjectPicker';
 import { ZendeskTicketsInput } from '@/components/ZendeskTickets';
 import { useProjects } from '@/hooks/useProjects';
-import { useUrls } from '@/hooks/useUrls';
 import { useArchiveTask, useTask, useUpdateTask } from '@/hooks/useTasks';
 import { useTaskHistory } from '@/hooks/useHistory';
 import { taskStatusLabel } from '@/lib/format';
@@ -44,14 +43,7 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
   const { data: projects = [] } = useProjects('active');
   const updateMut = useUpdateTask(taskId, projectId);
   const archiveMut = useArchiveTask(taskId, projectId);
-  const navigate = useNavigate();
   const qc = useQueryClient();
-  const { projectPath } = useUrls();
-
-  // Project options sorted by name; ensure the task's current project is
-  // always selectable even if it isn't in the active list.
-  const projectOptions = [...projects].sort((a, b) => a.name.localeCompare(b.name));
-  const currentInList = task ? projectOptions.some((p) => p.id === task.project_id) : true;
 
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [zendeskDraft, setZendeskDraft] = useState<number[]>([]);
@@ -115,12 +107,12 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
     try {
       await updateMut.mutateAsync({ payload });
       if (movedProject) {
-        // The task now lives under a different project; the modal route's
-        // projectId is stale, so refresh every task cache and follow it home.
+        // The task now lives under a different project, so both projects'
+        // task lists are stale. Refresh them, then close back to the
+        // project the user was working in rather than following the task
+        // to its new home.
         qc.invalidateQueries({ queryKey: ['tasks'] });
         qc.invalidateQueries({ queryKey: ['task', taskId] });
-        navigate(projectPath(draft.project_id));
-        return;
       }
       onClose();
     } catch (err) {
@@ -182,21 +174,13 @@ export function TaskDetail({ taskId, projectId, onClose }: Props) {
                 </select>
               </Field>
               <Field label="Project">
-                <select
+                <ProjectPicker
+                  id="td-project"
                   value={draft.project_id ?? ''}
-                  onChange={(e) => setField('project_id', e.target.value)}
-                  className={styles.input}
-                  title="Move this task to a different project"
-                >
-                  {!currentInList && draft.project_id && (
-                    <option value={draft.project_id}>Current project</option>
-                  )}
-                  {projectOptions.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  projects={projects}
+                  onChange={(next) => setField('project_id', next)}
+                  allowCreate
+                />
               </Field>
               <Field label="Due date">
                 <input

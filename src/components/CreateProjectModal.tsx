@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 
 import { useCreateProject } from '@/hooks/useProjects';
+import { LocationField } from './LocationField';
 import type { Project, ProjectTypeId, HealthId } from '@/lib/types';
 import { ZendeskTicketsInput } from './ZendeskTickets';
 
@@ -163,12 +164,11 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
           <div className={styles.cols2}>
             <div className={styles.row}>
               <label className={styles.label} htmlFor="cp-location">Where it lives</label>
-              <input
+              <LocationField
                 id="cp-location"
                 className={styles.input}
                 value={primaryLocation}
-                onChange={(e) => setPrimaryLocation(e.target.value)}
-                placeholder="e.g. OneDrive › 01 projects › …"
+                onChange={setPrimaryLocation}
               />
             </div>
             <div className={styles.row}>

@@ -1,0 +1,100 @@
+.wrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 6px 26px 6px 8px;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.input:focus {
+  outline: 2px solid var(--dio-accent);
+  outline-offset: -1px;
+  border-color: var(--dio-accent);
+}
+
+.caret {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--dio-grey-soft);
+  pointer-events: none;
+}
+
+/* Fixed, because it renders in a portal on document.body and is
+   positioned against the input. Sits above the task modal (80) and
+   below the confirm dialog (100). */
+.list {
+  position: fixed;
+  z-index: 90;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--sp-1);
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lifted);
+}
+
+.row {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.rowActive {
+  background: var(--dio-blue-ghost);
+}
+.rowSelected .rowName {
+  font-weight: 600;
+}
+.row:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.rowName {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--dio-navy);
+  line-height: 1.35;
+}
+.rowPath {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--dio-grey-soft);
+  line-height: 1.35;
+}
+
+/* The "new project" row, kept visually apart from real projects. */
+.create {
+  border-top: 1px solid var(--border-soft);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  margin-top: var(--sp-1);
+}
+.create .rowName {
+  color: var(--dio-accent);
+  font-weight: 600;
+}
+
+.none,
+.error {
+  padding: 8px;
+  font-size: var(--text-xs);
+  color: var(--dio-grey-soft);
+}
+.error {
+  color: var(--status-red);
+}

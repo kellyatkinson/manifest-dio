@@ -20,6 +20,7 @@ import { ActivityFeed } from '@/components/ActivityFeed';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { HistoryFeed } from '@/components/HistoryFeed';
 import { InferencePopover } from '@/components/InferencePopover';
+import { LocationField } from '@/components/LocationField';
 import { QuickLog } from '@/components/QuickLog';
 import { StatusPill } from '@/components/StatusPill';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
@@ -447,11 +448,10 @@ export function ProjectDetail() {
               />
             </EditField>
             <EditField label="Where it lives" wide>
-              <input
+              <LocationField
                 value={draft.primary_location ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, primary_location: e.target.value }))}
+                onChange={(next) => setDraft((d) => ({ ...d, primary_location: next }))}
                 className={styles.input}
-                placeholder="e.g. OneDrive › 01 projects › Project Name"
               />
             </EditField>
             <EditField label="Notes (Logseq)">
