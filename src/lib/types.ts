@@ -53,6 +53,12 @@ export interface Project {
   parent_id: string | null;
   description: string | null;
   stream: StreamId | null;
+
+  /** How often this comes round, in words ("each term changeover",
+   *  "March and July"). Set = the row is cyclical. */
+  cadence: string | null;
+  /** ISO date the next run is due, or null for one-off work. */
+  next_due: string | null;
   role_tag: RoleTagId | null;
 
   status: ProjectStatusId;

@@ -189,6 +189,9 @@ export interface CreateProjectInput {
   logseq_page?: string;
   parent_id?: string | null;
   description?: string | null;
+  cadence?: string;
+  /** ISO date (yyyy-mm-dd). */
+  next_due?: string;
   health_inferred?: boolean;
   health_confidence?: ConfidenceId;
   owner_inferred?: boolean;
@@ -214,6 +217,9 @@ export interface UpdateProjectInput {
   logseq_page?: string | null;
   parent_id?: string | null;
   description?: string | null;
+  cadence?: string | null;
+  /** ISO date (yyyy-mm-dd), or null to clear. */
+  next_due?: string | null;
   display_order?: number;
   zendesk_tickets?: number[];
 }

@@ -5,6 +5,11 @@
 // A system is the main one: Schoolbox work lives in several
 // portfolios at once, so system is a label on the row, not a level
 // above it. A row carrying two systems appears under both.
+//
+// Cadence is the other kind: it is not a fourth stream, because a term
+// changeover is operations AND cyclical. A row is cyclical when it has
+// a cadence set, so nothing has to give up its stream to appear here,
+// and the Cyclical bucket is ordered by what comes round next.
 // ---------------------------------------------------------------
 
 import { useMemo, useState } from 'react';
@@ -12,12 +17,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '@/hooks/useProjects';
 import { useUrls } from '@/hooks/useUrls';
-import { statusLabel } from '@/lib/format';
+import { formatDate, statusLabel } from '@/lib/format';
 import type { HealthId, Project } from '@/lib/types';
 
 import styles from './Streams.module.css';
 
-type Dimension = 'system' | 'stream' | 'health';
+type Dimension = 'system' | 'stream' | 'cadence' | 'health';
 
 const DIMENSIONS: { id: Dimension; label: string; blurb: string }[] = [
   {
@@ -29,6 +34,12 @@ const DIMENSIONS: { id: Dimension; label: string; blurb: string }[] = [
     id: 'stream',
     label: 'Stream',
     blurb: 'Change, governance or operations — the kind of work rather than the system.',
+  },
+  {
+    id: 'cadence',
+    label: 'Cadence',
+    blurb:
+      'Cyclical work is anything with a cadence set, wherever it sits and whatever its stream. Ordered by what comes round next.',
   },
   {
     id: 'health',
@@ -88,6 +99,37 @@ export function Streams() {
       })).filter((b) => b.items.length > 0);
     }
 
+    if (dimension === 'cadence') {
+      // Soonest first; a cyclical row with no date yet sorts last
+      // rather than being hidden.
+      const byNextDue = (a: Project, b: Project) => {
+        if (a.next_due && b.next_due) return a.next_due.localeCompare(b.next_due);
+        if (a.next_due) return -1;
+        if (b.next_due) return 1;
+        return a.name.localeCompare(b.name, 'en-NZ');
+      };
+      const cyclical = projects.filter((p) => Boolean(p.cadence));
+      const oneOff = projects.filter((p) => !p.cadence);
+      const out: Bucket[] = [];
+      if (cyclical.length) {
+        out.push({
+          key: '__cyclical',
+          title: 'Cyclical',
+          untagged: false,
+          items: [...cyclical].sort(byNextDue),
+        });
+      }
+      if (oneOff.length) {
+        out.push({
+          key: '__oneoff',
+          title: 'One-off',
+          untagged: true,
+          items: sortItems(oneOff),
+        });
+      }
+      return out;
+    }
+
     if (dimension === 'stream') {
       const named = new Map<string, Project[]>();
       const none: Project[] = [];
@@ -142,9 +184,13 @@ export function Streams() {
     return out;
   }, [projects, dimension]);
 
-  const tagged = dimension === 'system'
-    ? projects.filter((p) => (p.systems ?? []).length > 0).length
-    : null;
+  const tagged =
+    dimension === 'system'
+      ? projects.filter((p) => (p.systems ?? []).length > 0).length
+      : dimension === 'cadence'
+        ? projects.filter((p) => Boolean(p.cadence)).length
+        : null;
+  const tallyWord = dimension === 'cadence' ? 'cyclical' : 'tagged';
 
   return (
     <div>
@@ -168,7 +214,7 @@ export function Streams() {
         ))}
         {tagged !== null && (
           <span className={styles.tally}>
-            {tagged} of {projects.length} rows tagged
+            {tagged} of {projects.length} rows {tallyWord}
           </span>
         )}
       </div>
@@ -205,6 +251,11 @@ export function Streams() {
                       >
                         {p.name}
                       </button>
+                      {dimension === 'cadence' && p.cadence && (
+                        <span className={styles.chip} title={`Comes round: ${p.cadence}`}>
+                          {p.next_due ? formatDate(p.next_due) : 'no date yet'}
+                        </span>
+                      )}
                       {portfolioOf.get(p.id) && (
                         <span className={styles.chip}>{portfolioOf.get(p.id)}</span>
                       )}

@@ -24,6 +24,8 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
   const [primaryLocation, setPrimaryLocation] = useState('');
   const [logseqPage, setLogseqPage] = useState('');
   const [parentId, setParentId] = useState('');
+  const [cadence, setCadence] = useState('');
+  const [nextDue, setNextDue] = useState('');
   const [zendeskTickets, setZendeskTickets] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +43,8 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
         next_decision: nextDecision.trim() || undefined,
         primary_location: primaryLocation.trim() || undefined,
         logseq_page: logseqPage.trim() || undefined,
+        cadence: cadence.trim() || undefined,
+        next_due: nextDue || undefined,
         parent_id: parentId || null,
         ...(zendeskTickets.length > 0 ? { zendesk_tickets: zendeskTickets } : {}),
       });
@@ -148,6 +152,29 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
               </select>
             </div>
           )}
+
+          <div className={styles.cols2}>
+            <div className={styles.row}>
+              <label className={styles.label} htmlFor="cp-cadence">Comes round</label>
+              <input
+                id="cp-cadence"
+                className={styles.input}
+                value={cadence}
+                onChange={(e) => setCadence(e.target.value)}
+                placeholder="e.g. each term changeover, March and July"
+              />
+            </div>
+            <div className={styles.row}>
+              <label className={styles.label} htmlFor="cp-next-due">Next due</label>
+              <input
+                id="cp-next-due"
+                type="date"
+                className={styles.input}
+                value={nextDue}
+                onChange={(e) => setNextDue(e.target.value)}
+              />
+            </div>
+          </div>
 
           <div className={styles.row}>
             <label className={styles.label} htmlFor="cp-next-decision">Next decision</label>

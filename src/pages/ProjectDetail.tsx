@@ -31,7 +31,7 @@ import { useProjectActivity } from '@/hooks/useActivity';
 import { useProjectHistory } from '@/hooks/useHistory';
 import { useTasksForProject } from '@/hooks/useTasks';
 import { useUrls } from '@/hooks/useUrls';
-import { formatDateTime, humaniseFieldName, humaniseFieldValue, projectTypeLabel } from '@/lib/format';
+import { formatDate, formatDateTime, humaniseFieldName, humaniseFieldValue, projectTypeLabel } from '@/lib/format';
 import type { ConfidenceId, HealthId, ProjectHistoryRow, ProjectStatusId, ProjectTypeId } from '@/lib/types';
 
 import { TaskDetail } from './TaskDetail';
@@ -118,6 +118,8 @@ export function ProjectDetail() {
       logseq_page: project.logseq_page ?? '',
       parent_id: project.parent_id ?? '',
       description: project.description ?? '',
+      cadence: project.cadence ?? '',
+      next_due: project.next_due ?? '',
     });
     setZendeskDraft(project.zendesk_tickets ?? []);
     setEditing(true);
@@ -145,6 +147,8 @@ export function ProjectDetail() {
       payload.parent_id = draft.parent_id || null;
     if (draft.description !== (project.description ?? ''))
       payload.description = draft.description || null;
+    if (draft.cadence !== (project.cadence ?? '')) payload.cadence = draft.cadence || null;
+    if (draft.next_due !== (project.next_due ?? '')) payload.next_due = draft.next_due || null;
     const existingTickets = project.zendesk_tickets ?? [];
     if (
       zendeskDraft.length !== existingTickets.length ||
@@ -313,6 +317,10 @@ export function ProjectDetail() {
               <div className={styles.panelGrid}>
                 <Field label="Next decision" value={project.next_decision ?? <Muted />} wide />
                 <Field label="Deadline" value={project.deadline ?? <Muted />} />
+                {project.cadence && <Field label="Comes round" value={project.cadence} />}
+                {project.next_due && (
+                  <Field label="Next due" value={formatDate(project.next_due)} />
+                )}
                 {project.health_confidence && (
                   <Field
                     label="Health confidence"
@@ -454,6 +462,22 @@ export function ProjectDetail() {
                 onChange={(e) => setDraft((d) => ({ ...d, deadline: e.target.value }))}
                 className={styles.input}
                 placeholder="free text — e.g. TBD, 2026-06-15"
+              />
+            </EditField>
+            <EditField label="Comes round">
+              <input
+                value={draft.cadence ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, cadence: e.target.value }))}
+                className={styles.input}
+                placeholder="free text — e.g. each term changeover, March and July"
+              />
+            </EditField>
+            <EditField label="Next due">
+              <input
+                type="date"
+                value={draft.next_due ?? ''}
+                onChange={(e) => setDraft((d) => ({ ...d, next_due: e.target.value }))}
+                className={styles.input}
               />
             </EditField>
             <EditField label="Where it lives" wide>
