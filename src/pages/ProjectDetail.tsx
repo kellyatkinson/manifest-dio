@@ -57,12 +57,21 @@ export function ProjectDetail() {
   const projectId = resolveProject(projectParam);
   const taskId = resolveTask(taskParam);
 
-  const { data: project, isLoading, error } = useProject(projectId);
+  const { data: fetchedProject, isLoading, error } = useProject(projectId);
   const { data: tasks = [] } = useTasksForProject(projectId);
   const { data: history = [] } = useProjectHistory(projectId);
   const { data: activity = [] } = useProjectActivity(projectId, 30);
   const { data: allProjects = [] } = useProjects('active');
   const programmes = allProjects.filter((p) => p.project_type === 'programme' && p.id !== projectId);
+
+  // useProject fetches one row, so it cannot see the rows below it.
+  // Take the rolled-up health from the list, which can.
+  const project = useMemo(() => {
+    if (!fetchedProject) return fetchedProject;
+    const inList = allProjects.find((p) => p.id === fetchedProject.id);
+    if (!inList?.health_rolled_up) return fetchedProject;
+    return { ...fetchedProject, health: inList.health, health_rolled_up: true };
+  }, [fetchedProject, allProjects]);
 
   const updateMut = useUpdateProject(projectId ?? '');
   const archiveMut = useArchiveProject(projectId ?? '');

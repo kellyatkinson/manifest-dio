@@ -61,6 +61,9 @@ export interface Project {
   status_changed_by_email: string | null;
 
   health_inferred: boolean;
+  /** Set by applyPortfolioRollUp: this row's health is the worst of
+   *  its live rows, not the value stored against it. Not a column. */
+  health_rolled_up?: boolean;
   health_confidence: ConfidenceId | null;
   owner_inferred: boolean;
   owner_confidence: ConfidenceId | null;

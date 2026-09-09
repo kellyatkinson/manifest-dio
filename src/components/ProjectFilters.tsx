@@ -52,7 +52,7 @@ export function ProjectFilters({ value, onChange, ownerOptions, showStateFilter 
           <option value="red">Off track</option>
           <option value="amber">At risk</option>
           <option value="green">On track</option>
-          <option value="placeholder">Watching</option>
+          <option value="placeholder">Not started</option>
         </select>
       </div>
 

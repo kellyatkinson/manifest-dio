@@ -55,6 +55,9 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
 
   const isHealth = field === 'health';
   const isInferred = isHealth ? project.health_inferred : project.owner_inferred;
+  // A portfolio's health is the worst of the rows below it, so it is
+  // not something to set here — change a row's health instead.
+  const isRolledUp = isHealth && Boolean(project.health_rolled_up);
 
   // Position the popover next to the anchor point. Keep within viewport.
   const left = Math.min(anchor.x, window.innerWidth - 260);
@@ -73,10 +76,17 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
         <div className={styles.label}>{field === 'health' ? 'Health' : 'Owner'}</div>
         <div className={styles.current}>
           Current: <strong>{isHealth ? statusLabel(project.health) : project.owner ?? 'unassigned'}</strong>
-          {isInferred && ' (inferred)'}
+          {isRolledUp ? ' (from the rows below)' : isInferred && ' (inferred)'}
         </div>
 
-        {isInferred && (
+        {isRolledUp && (
+          <div className={styles.current}>
+            A portfolio takes the worst health of its live rows. Change a row&rsquo;s health to
+            move it.
+          </div>
+        )}
+
+        {!isRolledUp && isInferred && (
           <button
             type="button"
             className={`${styles.btn} ${styles.primary}`}
@@ -89,9 +99,9 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
           </button>
         )}
 
-        <div className={styles.divider} />
+        {!isRolledUp && <div className={styles.divider} />}
 
-        {isHealth ? (
+        {isRolledUp ? null : isHealth ? (
           <>
             <div className={styles.label}>Change to</div>
             <div className={styles.changeList}>

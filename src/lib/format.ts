@@ -59,7 +59,9 @@ export function statusLabel(s: HealthId): string {
     case 'red':
       return 'Off track';
     case 'placeholder':
-      return 'Watching';
+      // The stored id stays 'placeholder' — it means no health has
+      // been set yet, which reads to a person as "not started".
+      return 'Not started';
   }
 }
 

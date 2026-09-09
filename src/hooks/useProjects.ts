@@ -20,6 +20,7 @@ import {
   type CreateProjectInput,
   type UpdateProjectInput,
 } from '@/lib/api';
+import { applyPortfolioRollUp } from '@/lib/portfolioHealth';
 import type { ConfidenceId, HealthId, ProjectStatusId } from '@/lib/types';
 
 const PROJECTS_KEY = ['projects'] as const;
@@ -29,6 +30,9 @@ export function useProjects(status: ProjectStatusId | 'all' = 'active') {
   return useQuery({
     queryKey: [...PROJECTS_KEY, status],
     queryFn: () => listProjects(status),
+    // A portfolio's health is the worst of the rows below it. Applied
+    // here so every view that reads projects agrees on it.
+    select: applyPortfolioRollUp,
     staleTime: 30 * 1000,
   });
 }

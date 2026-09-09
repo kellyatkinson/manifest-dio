@@ -100,7 +100,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
                 value={health}
                 onChange={(e) => setHealth(e.target.value as HealthId)}
               >
-                <option value="placeholder">Watching</option>
+                <option value="placeholder">Not started</option>
                 <option value="green">On track</option>
                 <option value="amber">At risk</option>
                 <option value="red">Off track</option>
