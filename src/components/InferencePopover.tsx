@@ -144,7 +144,7 @@ export function InferencePopover({ project, field, anchor, onClose }: Props) {
               className={styles.input}
               value={draftOwner}
               onChange={(e) => setDraftOwner(e.target.value)}
-              placeholder="e.g. Kelly (BIM)"
+              placeholder="e.g. Kelly"
             />
             <div className={styles.row}>
               <span className={styles.label} style={{ marginBottom: 0 }}>

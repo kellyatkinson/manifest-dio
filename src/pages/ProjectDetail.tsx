@@ -395,7 +395,7 @@ export function ProjectDetail() {
                 value={draft.owner ?? ''}
                 onChange={(e) => setDraft((d) => ({ ...d, owner: e.target.value }))}
                 className={styles.input}
-                placeholder="e.g. Kelly (BIM)"
+                placeholder="e.g. Kelly"
               />
             </EditField>
             <EditField label="Owner confidence">

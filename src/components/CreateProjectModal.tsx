@@ -120,7 +120,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
                 className={styles.input}
                 value={owner}
                 onChange={(e) => setOwner(e.target.value)}
-                placeholder="e.g. Kelly (BIM)"
+                placeholder="e.g. Kelly"
               />
             </div>
 
