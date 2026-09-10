@@ -1,13 +1,19 @@
 // ---------------------------------------------------------------
-// Programme detail page
+// Container detail page  (route: /programmes/:id)
 // ---------------------------------------------------------------
-// A dedicated surface for a programme — the row's own metadata,
-// plus a clear list of the child projects underneath it, with
-// aggregate health and quick navigation.
+// A surface for a row that holds other rows: its own metadata, what
+// sits inside it, aggregate health, and quick navigation.
 //
-// For full edit of the programme record, link out to /portfolio/:id
-// (which uses the same Project edit form). This keeps the
-// programme view read-focused.
+// The visible copy says "container", not "programme". The same page
+// serves a portfolio (top-level) and a programme (nested inside one),
+// and calling a portfolio a programme was misleading — while calling
+// it a portfolio here would need two sets of wording for one page.
+// "Container" is what they have in common: they hold work rather than
+// being it. The route, the file and the identifiers keep the
+// programme name.
+//
+// For full edit of the record, link out to /portfolio/:id (which uses
+// the same Project edit form). This keeps the view read-focused.
 // ---------------------------------------------------------------
 
 import { useEffect, useMemo, useState } from 'react';
@@ -56,7 +62,7 @@ export function ProgrammeDetail() {
     [allProjects, programmeId],
   );
 
-  // Roll-up activity = programme's own + all children's
+  // Roll-up activity = this row's own + everything inside it
   const activityProjectIds = useMemo(
     () => (programmeId ? [programmeId, ...children.map((c) => c.id)] : []),
     [programmeId, children],
@@ -79,11 +85,11 @@ export function ProgrammeDetail() {
     if (location.pathname !== pretty) navigate(pretty, { replace: true });
   }, [programme, location.pathname, projectKey, navigate]);
 
-  if (isLoading) return <div className={styles.placeholder}>Loading programme…</div>;
-  if (error) return <div className={styles.error}>Could not load programme: {(error as Error).message}</div>;
-  if (!programme) return <div className={styles.placeholder}>Programme not found.</div>;
+  if (isLoading) return <div className={styles.placeholder}>Loading…</div>;
+  if (error) return <div className={styles.error}>Could not load: {(error as Error).message}</div>;
+  if (!programme) return <div className={styles.placeholder}>Not found.</div>;
   if (programme.project_type !== 'programme') {
-    // If someone routes here with a non-programme ID, redirect to the project view
+    // A row that holds nothing is not a container: send it to the project view
     navigate(projectPath(programme.id), { replace: true });
     return null;
   }
@@ -94,7 +100,7 @@ export function ProgrammeDetail() {
       <header className={styles.head}>
         <div className={styles.heroRow}>
           <div className={styles.heroIntro}>
-            <span className={styles.kicker}>Programme</span>
+            <span className={styles.kicker}>Container</span>
             <h1 className={styles.title}>{programme.name}</h1>
           </div>
           <div className={styles.heroActions}>
@@ -145,10 +151,10 @@ export function ProgrammeDetail() {
         </div>
       </header>
 
-      {/* ---- Programme summary (children stats) ---- */}
+      {/* ---- Summary of what is inside ---- */}
       <section className={styles.summary}>
         <div className={styles.summaryStat}>
-          <span className={styles.statLabel}>Projects in this programme</span>
+          <span className={styles.statLabel}>Rows inside</span>
           <span className={styles.statValue}>{children.length}</span>
         </div>
         <div className={styles.summaryStat}>
@@ -190,7 +196,7 @@ export function ProgrammeDetail() {
         </div>
       </section>
 
-      {/* ---- Programme description ---- */}
+      {/* ---- Description ---- */}
       {programme.description && (
         <section className={styles.panel}>
           <h3 className={styles.panelTitle}>Description</h3>
@@ -198,7 +204,7 @@ export function ProgrammeDetail() {
         </section>
       )}
 
-      {/* ---- Programme next decision ---- */}
+      {/* ---- Next decision ---- */}
       {programme.next_decision && (
         <section className={styles.panel}>
           <h3 className={styles.panelTitle}>Next decision</h3>
@@ -209,7 +215,7 @@ export function ProgrammeDetail() {
       {/* ---- Children grid ---- */}
       <section className={styles.childrenWrap}>
         <header className={styles.childrenHead}>
-          <h2 className={styles.childrenTitle}>Projects in this programme</h2>
+          <h2 className={styles.childrenTitle}>What sits inside</h2>
           <span className={styles.childrenCount}>{children.length}</span>
           <button
             type="button"
@@ -221,7 +227,7 @@ export function ProgrammeDetail() {
         </header>
         {children.length === 0 ? (
           <div className={styles.empty}>
-            <p className={styles.emptyText}>Nothing under this programme yet.</p>
+            <p className={styles.emptyText}>Nothing inside this yet.</p>
             <button
               type="button"
               className={`${styles.btn} ${styles.btnPrimary}`}
@@ -239,7 +245,7 @@ export function ProgrammeDetail() {
         )}
       </section>
 
-      {/* ---- Activity (programme + children rolled up) ---- */}
+      {/* ---- Activity (this row + everything inside, rolled up) ---- */}
       <section className={styles.activityWrap}>
         <header className={styles.activityHead}>
           <h2 className={styles.activityTitle}>Activity</h2>
@@ -249,7 +255,7 @@ export function ProgrammeDetail() {
           <div className={styles.quickLogWrap}>
             <QuickLog
               projectId={programme.id}
-              placeholder="Log a programme-level discussion or decision…"
+              placeholder="Log a discussion or decision at this level…"
               contextHint={programme.name}
             />
           </div>
@@ -257,14 +263,14 @@ export function ProgrammeDetail() {
             entries={activity}
             limit={15}
             showProject
-            emptyMessage="Nothing logged across this programme yet."
+            emptyMessage="Nothing logged across this container yet."
           />
         </div>
       </section>
 
-      {/* ---- Programme history ---- */}
+      {/* ---- History ---- */}
       <div className={styles.historyWrap}>
-        <HistoryFeed rows={history} title="Programme history" />
+        <HistoryFeed rows={history} title="History" />
       </div>
 
       {showCreate && (
