@@ -10,10 +10,11 @@
 // programme view read-focused.
 // ---------------------------------------------------------------
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ActivityFeed } from '@/components/ActivityFeed';
+import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { HistoryFeed } from '@/components/HistoryFeed';
 import { ProjectCard } from '@/components/ProjectCard';
 import { QuickLog } from '@/components/QuickLog';
@@ -43,6 +44,8 @@ export function ProgrammeDetail() {
   const location = useLocation();
   const { resolveProject, projectPath, projectKey } = useUrls();
   const programmeId = resolveProject(programmeParam);
+
+  const [showCreate, setShowCreate] = useState(false);
 
   const { data: programme, isLoading, error } = useProject(programmeId);
   const { data: allProjects = [] } = useProjects('active');
@@ -95,6 +98,13 @@ export function ProgrammeDetail() {
             <h1 className={styles.title}>{programme.name}</h1>
           </div>
           <div className={styles.heroActions}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              onClick={() => setShowCreate(true)}
+            >
+              New project
+            </button>
             <Link to={`/portfolio/${projectKey(programme.id)}`} className={styles.btn}>
               Open / edit
             </Link>
@@ -201,10 +211,24 @@ export function ProgrammeDetail() {
         <header className={styles.childrenHead}>
           <h2 className={styles.childrenTitle}>Projects in this programme</h2>
           <span className={styles.childrenCount}>{children.length}</span>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnAdd}`}
+            onClick={() => setShowCreate(true)}
+          >
+            + Add a project
+          </button>
         </header>
         {children.length === 0 ? (
           <div className={styles.empty}>
-            No projects yet under this programme. Open a project and set its Parent programme to add one.
+            <p className={styles.emptyText}>Nothing under this programme yet.</p>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              onClick={() => setShowCreate(true)}
+            >
+              Create the first project
+            </button>
           </div>
         ) : (
           <div className={styles.childrenGrid}>
@@ -242,6 +266,14 @@ export function ProgrammeDetail() {
       <div className={styles.historyWrap}>
         <HistoryFeed rows={history} title="Programme history" />
       </div>
+
+      {showCreate && (
+        <CreateProjectModal
+          programmes={allProjects.filter((p) => p.project_type === 'programme')}
+          defaultParentId={programmeId}
+          onClose={() => setShowCreate(false)}
+        />
+      )}
     </div>
   );
 }

@@ -64,6 +64,24 @@
   text-decoration: none;
 }
 
+/* The primary action on this page: adding work under the programme. */
+.btnPrimary {
+  background: var(--dio-navy);
+  border-color: var(--dio-navy);
+  color: var(--surface);
+}
+.btnPrimary:hover {
+  background: var(--dio-navy-deep);
+  color: var(--surface);
+}
+
+/* Quieter twin, sitting on the children list header. */
+.btnAdd {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+}
+
 .stateChip {
   font-size: 11px;
   font-weight: 600;
@@ -332,13 +350,20 @@
 }
 
 .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
   padding: var(--sp-6);
   text-align: center;
-  color: var(--dio-grey-soft);
-  font-style: italic;
   background: var(--surface);
   border: 1px dashed var(--border);
   border-radius: var(--radius-md);
+}
+.emptyText {
+  margin: 0;
+  color: var(--dio-grey-soft);
+  font-style: italic;
 }
 
 /* ---- Activity (programme roll-up) ---- */

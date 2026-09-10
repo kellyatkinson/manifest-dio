@@ -10,9 +10,12 @@ import styles from './CreateProjectModal.module.css';
 interface Props {
   onClose: () => void;
   programmes?: Project[];
+  /** Preselect the parent — e.g. opened from a programme's own page,
+   *  where the new row almost always belongs under that programme. */
+  defaultParentId?: string | null;
 }
 
-export function CreateProjectModal({ onClose, programmes = [] }: Props) {
+export function CreateProjectModal({ onClose, programmes = [], defaultParentId }: Props) {
   const createMut = useCreateProject();
 
   const [name, setName] = useState('');
@@ -23,7 +26,7 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
   const [nextDecision, setNextDecision] = useState('');
   const [primaryLocation, setPrimaryLocation] = useState('');
   const [logseqPage, setLogseqPage] = useState('');
-  const [parentId, setParentId] = useState('');
+  const [parentId, setParentId] = useState(defaultParentId ?? '');
   const [cadence, setCadence] = useState('');
   const [nextDue, setNextDue] = useState('');
   const [zendeskTickets, setZendeskTickets] = useState<number[]>([]);
@@ -136,16 +139,18 @@ export function CreateProjectModal({ onClose, programmes = [] }: Props) {
             </div>
           </div>
 
-          {type === 'project' && programmes.length > 0 && (
+          {programmes.length > 0 && (
             <div className={styles.row}>
-              <label className={styles.label} htmlFor="cp-parent">Parent programme</label>
+              <label className={styles.label} htmlFor="cp-parent">
+                Parent programme
+              </label>
               <select
                 id="cp-parent"
                 className={styles.input}
                 value={parentId}
                 onChange={(e) => setParentId(e.target.value)}
               >
-                <option value="">— none (standalone project) —</option>
+                <option value="">— none (top level) —</option>
                 {programmes.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
