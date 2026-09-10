@@ -4,13 +4,13 @@
 // A surface for a row that holds other rows: its own metadata, what
 // sits inside it, aggregate health, and quick navigation.
 //
-// The visible copy says "container", not "programme". The same page
-// serves a portfolio (top-level) and a programme (nested inside one),
-// and calling a portfolio a programme was misleading — while calling
-// it a portfolio here would need two sets of wording for one page.
-// "Container" is what they have in common: they hold work rather than
-// being it. The route, the file and the identifiers keep the
-// programme name.
+// "Container" is the internal word for the two levels this page
+// serves, and it stays internal: on the page itself you need to know
+// WHICH you are looking at, so the kicker is derived — a row with no
+// parent is a portfolio, a row inside one is a programme. Copy that
+// applies equally to both stays level-neutral ("What sits inside")
+// rather than asserting either. The route, the file and the
+// identifiers keep the programme name.
 //
 // For full edit of the record, link out to /portfolio/:id (which uses
 // the same Project edit form). This keeps the view read-focused.
@@ -57,6 +57,10 @@ export function ProgrammeDetail() {
   const { data: allProjects = [] } = useProjects('active');
   const { data: history = [] } = useProjectHistory(programmeId);
 
+  // A container with no parent is a portfolio; one inside another is a
+  // programme. Same page, but the reader is told which.
+  const levelLabel = programme?.parent_id ? 'Programme' : 'Portfolio';
+
   const children = useMemo(
     () => allProjects.filter((p) => p.parent_id === programmeId),
     [allProjects, programmeId],
@@ -100,7 +104,7 @@ export function ProgrammeDetail() {
       <header className={styles.head}>
         <div className={styles.heroRow}>
           <div className={styles.heroIntro}>
-            <span className={styles.kicker}>Container</span>
+            <span className={styles.kicker}>{levelLabel}</span>
             <h1 className={styles.title}>{programme.name}</h1>
           </div>
           <div className={styles.heroActions}>
@@ -227,7 +231,9 @@ export function ProgrammeDetail() {
         </header>
         {children.length === 0 ? (
           <div className={styles.empty}>
-            <p className={styles.emptyText}>Nothing inside this yet.</p>
+            <p className={styles.emptyText}>
+              Nothing inside this {levelLabel.toLowerCase()} yet.
+            </p>
             <button
               type="button"
               className={`${styles.btn} ${styles.btnPrimary}`}
@@ -263,7 +269,7 @@ export function ProgrammeDetail() {
             entries={activity}
             limit={15}
             showProject
-            emptyMessage="Nothing logged across this container yet."
+            emptyMessage={`Nothing logged across this ${levelLabel.toLowerCase()} yet.`}
           />
         </div>
       </section>
